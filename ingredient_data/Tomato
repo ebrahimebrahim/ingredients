@@ -1,0 +1,5 @@
+# Note the multiple inheritance. Later ones in the list override properties of earlier ones.
+
+name: Tomato
+abstract: False
+inherit: Vegetable, Juicy

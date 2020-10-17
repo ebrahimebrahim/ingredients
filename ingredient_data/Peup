@@ -1,0 +1,10 @@
+name: Peup
+abstract: False
+inherit: None
+chop: gain_mod chopped
+press: gain_mod shriveled; yield Peup
+cook_flame: gain_mod charred
+cook_fry: gain_mod fried
+cook_boil: gain_mod boiled
+cook_toast: gain_mod toasted
+cook_bake: gain_mod baked

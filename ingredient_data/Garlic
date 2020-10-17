@@ -1,0 +1,4 @@
+name: Garlic
+abstract: False
+inherit: Vegetable
+press: gain_mod crushed

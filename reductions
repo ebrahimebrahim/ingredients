@@ -1,0 +1,41 @@
+# This file contains reduction rules. First come rules for components, and then come rules for mixtures
+
+# This is where reduction rules are described at the level of components
+# A component is an ingredient with a list of modifiers in front of it
+# m1, m2, ... are variables for lists of modifiers, including the empty list
+# i1, i2, ... are variables for a ingredients
+# i1:[some ingredient] will bind only if i1 inherits the ingredient. So i1:Vegetable will match any vegetable, like Tomato, and bind it to i1 for the rewrite
+
+
+# The syntax "A + B = C" is a way of saying "m1 A m2 B m3 i1 -> C m1 m2 m3 i1" and "m1 B m2 A m3 i1 -> C m1 m2 m3 i1"
+fried + fried = 0.25 * burnt + 0.75 * fried # Consider doing it probabilisitically like this
+toasted + toasted = burnt
+baked + baked = burnt
+fried + burnt = extremely_burnt
+toasted + burnt = extremely_burnt
+baked + burnt = extremely_burnt
+fried + extremely_burnt = become_ash
+toasted + extremely_burnt = become_ash
+baked + extremely_burnt = become_ash
+
+# Note that become_ash is an auxiliary modifier that gives us an easier way to specify a reduction by breaking it into multiple steps
+m1 become_ash m2 i -> Ash
+
+# saying "A +> B = C" is a way of saying only "m1 A m2 B m3 i1 -> C m1 m2 m3 i1"
+# and not including the opposite order
+fried +> boiled = fried
+boiled +> fried = soggy
+fried +> soggy = fried
+soggy +> fried = soggy
+soggy + boiled = boiled
+
+
+# Now for reductions at the level of mixtures
+# Here order never matters, so we always put "+" 
+# If you see (component1) + (component2) = (component3), then this means:
+# if the mixture has a match to component1 in it and a different match to component2 in it, then remove them and insert component3
+# We can more generally have any number of components on the LHS and RHS
+
+(m1 powdered m2 i1:Grain) + (m3 Water) = (m1 m2 m3 i1 Dough)
+
+
