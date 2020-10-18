@@ -48,10 +48,12 @@ class ReductionRuleMixture:
 
 def token_type(token):
   """ Return a string describing the type of the token. The types are:
-      - modifier variable
-      - basic ingredient variable
-      - qualified ingredient variable
-      - constant
+      - modifier variable (for example m1, m2, ...)
+      - basic ingredient variable (for example i1, i2, ...)
+      - qualified ingredient variable (for example i1:Grain, i2:Vegetable, etc.)
+      - constant (for example Onion, Brocolli, etc.)
+      Does not sanity-check constants.
+      Things that aren't among the first three are constants.
   """
   if not token:
     raise Exception("token_type has been given an empty or null token")
@@ -60,6 +62,12 @@ def token_type(token):
   if token[0] == 'i':
     if token[1:].isnumeric():
       return "basic ingredient variable"
-    if ':' in token and token_type(token.split(':')[0])=="basic ingredient variable":
-      return "qualified ingredient variable"
+  token_colon_split = token.split(':')
+  if len(token_colon_split)==2:
+    l,r = token_colon_split
+    if token_type(l)!="basic ingredient variable":
+        raise Exception("Invalid token '{}', misplaced colon.".format(token))
+    if token_type(r)!="constant":
+        raise Exception("Invalid token '{}', a constant must come after the colon".format(token))
+    return "qualified ingredient variable"
   return "constant"

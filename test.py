@@ -40,11 +40,10 @@ class TestRuleParsers(unittest.TestCase):
     self.assertEqual(token_type("i93:Onion"),"qualified ingredient variable")
     self.assertEqual(token_type("Onion"),"constant")
     with self.assertRaises(Exception):
-      token_type("AnIngredientThatDoesNotExist")
-    with self.assertRaises(Exception):
-      token_type("i1:AnIngredientThatDoesNotExist")
-    with self.assertRaises(Exception):
       token_type("i1:i2")
+    with self.assertRaises(Exception):
+      token_type("Onion:Vegetable")
+
 
   def test_component_vs_mixture_rule_identification(self):
     for r in self.component_rules:
