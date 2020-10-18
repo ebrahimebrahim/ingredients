@@ -114,7 +114,8 @@ class TestReductionRuleMixture(unittest.TestCase):
     self.rrm = ReductionRuleMixture([["m1","Water"],["m4","i7:Grain"]],[["m4", "m1", "i7", "Dough"]])
 
   def test_string_conversion(self):
-    self.assertEqual(str(self.rrm),"(m1 Water) + (m4 i7:Grain) -> (m4 m1 i7 Dough)")
+    self.assertEqual("(m1 Water) + (m4 i7:Grain) -> (m4 m1 i7 Dough)",str(self.rrm))
+
 
 
 class TestRuleParsers(unittest.TestCase):
