@@ -1,5 +1,5 @@
 import itertools
-from util import ReductionRuleComponent, ReductionRuleMixture, token_type
+from util import ReductionRuleComponent, ReductionRuleMixture, Mixture, token_type
 
 REDUCTIONS_FILENAME = "reductions"
 
@@ -66,8 +66,8 @@ def parse_concise_symmetric_reduction_rule(line):
 def parse_mixture_reduction_rule(line):
   """ Parse the string into a ReductionRuleMixture and return it """
   lhs,rhs = line.split('->')
-  lhs_components = [c.strip('() ').split() for c in lhs.split('+')]
-  rhs_components = [c.strip('() ').split() for c in rhs.split('+')]
+  lhs_components = Mixture(lhs)
+  rhs_components = Mixture(rhs)
   return ReductionRuleMixture(lhs_components,rhs_components)
 
 

@@ -108,20 +108,27 @@ def match_pattern(pattern,component,inheritance_check):
   raise Exception("match_pattern: Encountered an invalid pattern:",pattern)
 
 
+class Mixture:
+  """ Wraps a list of components.
+      A component is a list of tokens, the same tokens described in ReductionRuleComponent
+  """
+  def __init__(self,string):
+    self.components = [c.strip('() ').split() for c in string.split('+')]
+
+  def __str__(self):
+    return ' + '.join('(' + ' '.join(component) + ')' for component in self.components)
+
 
 class ReductionRuleMixture:
   """ A ReductionRuleMixture represents a rule that combines "reactants" on the lhs and turns them into the "products" on the rhs.
-      The lhs and rhs are both lists of *components*.
-      A component is a list of tokens, the same tokens described in ReductionRuleComponent
+      The lhs and rhs are both Mixtures.
   """
   def __init__(self,lhs,rhs):
     self.lhs = lhs
     self.rhs = rhs
 
   def __str__(self):
-    lhs_str = ' + '.join('(' + ' '.join(component) + ')' for component in self.lhs)
-    rhs_str = ' + '.join('(' + ' '.join(component) + ')' for component in self.rhs)
-    return lhs_str + " -> " + rhs_str
+    return str(self.lhs) + " -> " + str(self.rhs)
 
 
 def token_type(token):

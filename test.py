@@ -1,6 +1,6 @@
 import unittest
 import parse_reductions
-from util import Ingredient,ReductionRuleMixture,ReductionRuleComponent,token_type,match_pattern
+from util import Ingredient,ReductionRuleMixture,ReductionRuleComponent,token_type,match_pattern,Mixture
 
 
 class TestMatchPattern(unittest.TestCase):
@@ -111,7 +111,7 @@ class TestReductionRuleComponent(unittest.TestCase):
 class TestReductionRuleMixture(unittest.TestCase):
 
   def setUp(self):
-    self.rrm = ReductionRuleMixture([["m1","Water"],["m4","i7:Grain"]],[["m4", "m1", "i7", "Dough"]])
+    self.rrm = ReductionRuleMixture(Mixture("(m1 Water) + (m4 i7:Grain)"),Mixture("m4 m1 i7 Dough"))
 
   def test_string_conversion(self):
     self.assertEqual("(m1 Water) + (m4 i7:Grain) -> (m4 m1 i7 Dough)",str(self.rrm))
@@ -195,12 +195,12 @@ class TestRuleParsers(unittest.TestCase):
     r = parsed[0]
 
     # Verify correct component count
-    self.assertEqual(len(r.lhs),2)
-    self.assertEqual(len(r.rhs),1)
+    self.assertEqual(len(r.lhs.components),2)
+    self.assertEqual(len(r.rhs.components),1)
 
     # Verify correct token counts
-    self.assertEqual([len(c) for c in r.lhs],[2,2])
-    self.assertEqual([len(c) for c in r.rhs],[4])
+    self.assertEqual([len(c) for c in r.lhs.components],[2,2])
+    self.assertEqual([len(c) for c in r.rhs.components],[4])
 
 
 
