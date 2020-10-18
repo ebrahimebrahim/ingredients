@@ -30,7 +30,7 @@ class ReductionRuleMixture:
   def __str__(self):
     lhs_str = ' + '.join('(' + ' '.join(component) + ')' for component in self.lhs)
     rhs_str = ' + '.join('(' + ' '.join(component) + ')' for component in self.rhs)
-    return lhs_str + " = " + rhs_str
+    return lhs_str + " -> " + rhs_str
 
 
 def token_type(token):
@@ -118,26 +118,31 @@ def parse_mixture_reduction_rule(line):
   
 
 
+def main():
+  reduction_rules_components = []
+  reduction_rules_mixtures = []
+  
+  
+  f = open(REDUCTIONS_FILENAME)
+  for line in f:
+    line = line.strip() # remove whitespace
+    line = line.split('#')[0] # remove comments
+    if not line: continue # skip blanks
+    if is_component_reduction_rule(line):
+      reduction_rules_components += parse_component_reduction_rule(line)
+    elif is_mixture_reduction_rule(line):
+      reduction_rules_mixtures.append(parse_mixture_reduction_rule(line))
+  f.close()
+  
+  
+  print("Component rules:")
+  for r in reduction_rules_components:
+    print(r)
+  print("Mixture rules:")
+  for r in reduction_rules_mixtures:
+    print(r)
 
-reduction_rules_components = []
-reduction_rules_mixtures = []
 
 
-f = open(REDUCTIONS_FILENAME)
-for line in f:
-  line = line.strip() # remove whitespace
-  line = line.split('#')[0] # remove comments
-  if not line: continue # skip blanks
-  if is_component_reduction_rule(line):
-    reduction_rules_components += parse_component_reduction_rule(line)
-  elif is_mixture_reduction_rule(line):
-    reduction_rules_mixtures.append(parse_mixture_reduction_rule(line))
-f.close()
-
-
-print("Component rules:")
-for r in reduction_rules_components:
-  print(r)
-print("Mixture rules:")
-for r in reduction_rules_mixtures:
-  print(r)
+if __name__ == '__main__' :
+  main()
