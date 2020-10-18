@@ -111,10 +111,25 @@ class TestReductionRuleComponent(unittest.TestCase):
 class TestReductionRuleMixture(unittest.TestCase):
 
   def setUp(self):
-    self.rrm = ReductionRuleMixture(Mixture("(m1 Water) + (m4 i7:Grain)"),Mixture("m4 m1 i7 Dough"))
+    self.rrm = ReductionRuleMixture(Mixture("(m1 Water) + (m2 powdered m3 i7:Grain)"),Mixture("m1 m2 m3 i7 Dough"))
 
   def test_string_conversion(self):
-    self.assertEqual("(m1 Water) + (m4 i7:Grain) -> (m4 m1 i7 Dough)",str(self.rrm))
+    self.assertEqual("(m1 Water) + (m2 powdered m3 i7:Grain) -> (m1 m2 m3 i7 Dough)",str(self.rrm))
+
+  def test_apply(self):
+    self.assertEqual(
+      "(Apple Oat Dough)",
+      str(self.rrm.apply(Mixture("(powdered Oat) + (Apple Water)")))
+    )
+    self.assertEqual(
+      "(Apple Oat Dough)",
+      str(self.rrm.apply(Mixture("(Apple Water) + (powdered Oat)")))
+    )
+    self.rrm.inheritance_check = lambda child,parent : child=="Oat" and parent=="Grain"
+    self.assertEqual(
+      "(Apple Oat Dough)",
+      str(self.rrm.apply(Mixture("(powdered Oat) + (Apple Water)")))
+    )
 
 
 
