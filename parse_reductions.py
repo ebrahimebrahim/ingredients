@@ -118,7 +118,11 @@ def parse_mixture_reduction_rule(line):
   
 
 
-def main():
+def parse(filepath):
+  """ Parse the reduction rules in filepath and return a pair of lists:
+      The first is the list of ReductionRuleComponent
+      The second is the list of ReductionRuleMixture
+  """
   reduction_rules_components = []
   reduction_rules_mixtures = []
   
@@ -133,7 +137,12 @@ def main():
     elif is_mixture_reduction_rule(line):
       reduction_rules_mixtures.append(parse_mixture_reduction_rule(line))
   f.close()
-  
+
+  return reduction_rules_components, reduction_rules_mixtures
+
+
+def main():
+  reduction_rules_components, reduction_rules_mixtures = parse(REDUCTIONS_FILENAME) 
   
   print("Component rules:")
   for r in reduction_rules_components:

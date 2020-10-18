@@ -28,12 +28,14 @@ def parse_inherit_list(s):
   return [name.strip() for name in s.split(',')]
 
 
-def main():
-
+def parse(ingredients_dir):
+  """ Parse the ingredients in ingredients_dir and return list of Ingredient's
+      See the docstring for Ingredient for what kind of things should end up in the list
+  """
   # Read all the ingredients into a list of dicts
   ingredient_dicts = []
-  for filename in os.listdir(INGREDIENTS_DIR):
-    path = os.path.join(INGREDIENTS_DIR, filename)
+  for filename in os.listdir(ingredients_dir):
+    path = os.path.join(ingredients_dir, filename)
     if not os.path.isfile(path): continue
     f = open(path)
     ingredient_dict = {"filepath":path}
@@ -112,6 +114,18 @@ def main():
         print("Warning: Attribute {} is never defined in the ingredient {}".format(a,ing.name),file=sys.stderr)
   
     ingredients.append(ing)
+
+  return ingredients
+
+
+
+def main():
+  ingredients = parse(INGREDIENTS_DIR)
+  print("Got the following ingredients:")
+  for ing in ingredients:
+    print()
+    print(ing.name)
+    print("\t",ing.__dict__)
   
   
 if __name__ == '__main__' :
