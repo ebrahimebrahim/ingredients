@@ -1,15 +1,111 @@
 import unittest
 import parse_reductions
-from util import Ingredient,ReductionRuleMixture,ReductionRuleComponent,token_type
+from util import Ingredient,ReductionRuleMixture,ReductionRuleComponent,token_type,match_pattern
+
+
+class TestMatchPattern(unittest.TestCase):
+
+  def setUp(self):
+    self.trivial_check = lambda child,parent : True
+
+  def test_pattern(self):
+    pattern = ['m1']
+    self.assertEqual(
+      {"m1":['Peup']},
+      match_pattern(pattern,['Peup'],self.trivial_check)
+    )
+
+  def test_pattern2(self):
+    pattern = ['m1', 'Onion']
+    self.assertEqual(
+      {"m1":['Peup']},
+      match_pattern(pattern,['Peup','Onion'],self.trivial_check)
+    )
+    self.assertEqual(
+      None,
+      match_pattern(pattern,['Peup'],self.trivial_check)
+    )
+    self.assertEqual(
+      None,
+      match_pattern(pattern,['Onion','Peup'],self.trivial_check)
+    )
+
+  def test_pattern3(self):
+    pattern = "m1 salty m2 pickled m3 Cucumber".split()
+    self.assertEqual(
+      {
+        "m1" : "aaa".split(),
+        "m2" : "bbb ccc".split(),
+        "m3" : "ddd eee fff".split()
+      },
+      match_pattern(pattern,"aaa salty bbb ccc pickled ddd eee fff Cucumber".split(),self.trivial_check)
+    )
+    self.assertEqual(
+      {
+        "m1" : "aaa".split(),
+        "m2" : [],
+        "m3" : []
+      },
+      match_pattern(pattern,"aaa salty pickled Cucumber".split(),self.trivial_check)
+    )
+    self.assertEqual(
+      None,
+      match_pattern(pattern,"aaa salty bbb ccc pickled ddd eee fff Burger".split(),self.trivial_check)
+    )
+
+
+  def test_pattern4(self):
+    pattern = "m1 salty m2 pickled m3 i1".split()
+    self.assertEqual(
+      {
+        "m1" : "aaa".split(),
+        "m2" : "bbb ccc".split(),
+        "m3" : "ddd eee fff".split(),
+        "i1" : "Cucumber".split()
+      },
+      match_pattern(pattern,"aaa salty bbb ccc pickled ddd eee fff Cucumber".split(),self.trivial_check)
+    )
+
+  @unittest.skip("pattern match does not support repeated variables")
+  def test_pattern5(self):
+    pattern = "m1 salty m1 pickled m3 Cucumber".split()
+    self.assertEqual(
+      {
+        "m1" : "aaa".split(),
+        "m3" : "bbb ccc".split(),
+      },
+      match_pattern(pattern,"aaa salty aaa pickled bbb ccc Cucumber".split(),self.trivial_check)
+    )
+    self.assertEqual(
+      None,
+      match_pattern(pattern,"aaa salty ddd pickled bbb ccc Cucumber".split(),self.trivial_check)
+    )
+
+
 
 
 class TestReductionRuleComponent(unittest.TestCase):
 
   def setUp(self):
-    self.rrc = ReductionRuleComponent(['m1', 'Onion', 'm2', 'Water'], ['m1', 'm2', 'Oil'])
+    self.rrc = ReductionRuleComponent(['m1', 'fried', 'm2', 'chopped', 'm3', 'Potato'], ['m1', 'm2', 'm3', 'FrenchFries'])
+    self.component_str = "dirty zesty fried chopped salty Potato"
+    self.reduced_str = "dirty zesty salty FrenchFries"
+    self.component_list = self.component_str.split()
+    self.match_lhs_result = {
+      "m1" : ['dirty','zesty'],
+      "m2" : [],
+      "m3" : ['salty']
+    }
 
   def test_string_conversion(self):
-    self.assertEqual(str(self.rrc), 'm1 Onion m2 Water -> m1 m2 Oil')
+    self.assertEqual(str(self.rrc), 'm1 fried m2 chopped m3 Potato -> m1 m2 m3 FrenchFries')
+
+  def test_match_lhs(self):
+    self.assertEqual(self.match_lhs_result, self.rrc.match_lhs(self.component_list))
+
+  def test_apply(self):
+    self.assertEqual(self.reduced_str, self.rrc.apply(self.component_str))
+
 
 
 class TestReductionRuleMixture(unittest.TestCase):
