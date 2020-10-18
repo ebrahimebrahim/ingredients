@@ -1,22 +1,8 @@
 import os,sys
+from util import Ingredient
 
 INGREDIENTS_DIR = "ingredient_data"
 
-
-
-class Ingredient:
-  """ Represents a NON_ABSTRACT ingredient. Any "ingredient inheritance" should be already resolved.
-      Still, it remembers the names of the ingredients in originally inherited from.
-      Example:
-        If ingredient file Onion inherts from file Vegetable,
-        then there will be an Ingredient object named "Onion" after parsing is done.
-        Whatever attributes Vegetable file had that Onion file does not override will end up in the Ingredient named "Onion"
-        If Vegetable file is abstract, then there is will be no Ingredient named "Vegetable"
-        But the Ingredient named "Onion" will still remember that it inherited from something called "Vegetable"
-  """
-  def __init__(self, name, inherited_from=[]):
-    self.name=name
-    self.inherited_from = inherited_from
 
 
 def parse_inherit_list(s):
@@ -52,29 +38,29 @@ def parse(ingredients_dir):
       ingredient_dict[k]=v
     ingredient_dicts.append(ingredient_dict)
     f.close()
-  
-  
+
+
   # These attributes, along with filepath, are treated specially to help with parsing
   required_attributes = ["name", "abstract", "inherit"]
   for ing in ingredient_dicts:
     for a in required_attributes:
       if a not in ing:
         raise Exception("Ingredient in {} is missing the required attribute '{}'".format(ing['filepath'],a))
-  
+
   # Further validation and warnings
   for ing in ingredient_dicts:
     if ing["abstract"] not in ["True", "False"]:
       raise Exception("Ingredient in {} has invalid value for attribute 'abstract'".format(ing['filepath']))
     if ing["name"] != os.path.basename(ing['filepath']):
       print("Warning: Ingredient in {} has name '{}' that does not match the filename. Was this intentional?".format(ing['filepath'],ing['name']), file=sys.stderr)
-  
-  
+
+
   # Dict for to lookup ingredients by ingredient name
   ingredient_dicts_byname = {}
   for ing in ingredient_dicts:
     ingredient_dicts_byname[ing["name"]] = ing
-  
-  
+
+
   # Gather all attributes, besides the ones needed for parsing, to help warn about missing attributes later
   # This is also the collection of attributes that can be inherited
   # A good way to think of it is that these are the non "header" attributes
@@ -82,18 +68,18 @@ def parse(ingredients_dir):
   for ing in ingredient_dicts:
     attributes.update(ing.keys())
   attributes.difference_update(["filepath"]+required_attributes)
-  
 
-  
-  
+
+
+
   ingredients = []  # List of Ingredient objects
   for ing_dict in ingredient_dicts:
     if ing_dict["abstract"]=="True": continue # We don't make entries for abstract ingredients
-  
+
     inherit_list = parse_inherit_list(ing_dict["inherit"])
-  
+
     ing = Ingredient(ing_dict["name"],inherit_list) # Ingredient to be constructed and appended to ingredients list
-    
+
     # Load in attributes from parents in order
     for name in inherit_list:
       if name not in ingredient_dicts_byname:
@@ -102,17 +88,17 @@ def parse(ingredients_dir):
       for a in parent:
         if a in attributes:
           ing.__dict__[a]=parent[a]
-    
+
     # Load in own attributes
     for a in ing_dict:
       if a in attributes:
         ing.__dict__[a]=ing_dict[a]
-  
+
     # Warn about seemingly missing attributes
     for a in attributes:
       if a not in ing.__dict__:
         print("Warning: Attribute {} is never defined in the ingredient {}".format(a,ing.name),file=sys.stderr)
-  
+
     ingredients.append(ing)
 
   return ingredients
@@ -126,8 +112,7 @@ def main():
     print()
     print(ing.name)
     print("\t",ing.__dict__)
-  
-  
+
+
 if __name__ == '__main__' :
   main()
-  

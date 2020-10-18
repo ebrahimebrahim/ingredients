@@ -1,5 +1,7 @@
 import unittest
-from parse_reductions import *
+import parse_reductions
+from util import Ingredient,ReductionRuleMixture,ReductionRuleComponent,token_type
+
 
 class TestReductionRuleComponent(unittest.TestCase):
 
@@ -14,7 +16,7 @@ class TestReductionRuleMixture(unittest.TestCase):
 
   def setUp(self):
     self.rrm = ReductionRuleMixture([["m1","Water"],["m4","i7:Grain"]],[["m4", "m1", "i7", "Dough"]])
-  
+
   def test_string_conversion(self):
     self.assertEqual(str(self.rrm),"(m1 Water) + (m4 i7:Grain) -> (m4 m1 i7 Dough)")
 
@@ -46,14 +48,14 @@ class TestRuleParsers(unittest.TestCase):
 
   def test_component_vs_mixture_rule_identification(self):
     for r in self.component_rules:
-      self.assertTrue(is_component_reduction_rule(r))
-      self.assertFalse(is_mixture_reduction_rule(r))
+      self.assertTrue(parse_reductions.is_component_reduction_rule(r))
+      self.assertFalse(parse_reductions.is_mixture_reduction_rule(r))
     for r in self.mixture_rules:
-      self.assertFalse(is_component_reduction_rule(r))
-      self.assertTrue(is_mixture_reduction_rule(r))
+      self.assertFalse(parse_reductions.is_component_reduction_rule(r))
+      self.assertTrue(parse_reductions.is_mixture_reduction_rule(r))
 
   def test_parse_component_reduction_rule(self):
-    parsed = [parse_component_reduction_rule(r) for r in self.component_rules]  # a list of lists of ReductionRuleComponent
+    parsed = [parse_reductions.parse_component_reduction_rule(r) for r in self.component_rules]  # a list of lists of ReductionRuleComponent
 
     # Check first concise component rule, the one that get parsed into multiple primitive rules:
     self.assertEqual(len(parsed[0]),2)
@@ -74,23 +76,23 @@ class TestRuleParsers(unittest.TestCase):
     self.assertEqual(len(r.rhs),4)
 
     # Check that it duplicate variable names:
-    p = parse_component_reduction_rule("baked +> m3 = baked")
+    p = parse_reductions.parse_component_reduction_rule("baked +> m3 = baked")
     self.assertEqual(len(p),1)
     self.assertEqual(str(p[0]),"m4 baked m5 m3 m6 i1 -> baked m4 m5 m6 i1")
 
     # Check three "summands", nonsymmetric
-    p = parse_component_reduction_rule("fried +> baked +> boiled = soggy")
+    p = parse_reductions.parse_component_reduction_rule("fried +> baked +> boiled = soggy")
     self.assertEqual(len(p),1)
     self.assertEqual(str(p[0]),"m0 fried m1 baked m2 boiled m3 i1 -> soggy m0 m1 m2 m3 i1")
 
     # Check three "summands", symmetric
-    p = parse_component_reduction_rule("fried + baked + boiled = soggy")
+    p = parse_reductions.parse_component_reduction_rule("fried + baked + boiled = soggy")
     self.assertEqual(len(p),6)
-    
 
-    
+
+
   def test_parse_mixture_reduction_rule(self):
-    parsed = [parse_mixture_reduction_rule(r) for r in self.mixture_rules]  # a list of ReductionRuleComponent
+    parsed = [parse_reductions.parse_mixture_reduction_rule(r) for r in self.mixture_rules]  # a list of ReductionRuleComponent
     for i in range(len(parsed)):
       self.assertEqual(str(parsed[i]),self.mixture_rules[i]) # parsing and converting back to string should make no change
 
