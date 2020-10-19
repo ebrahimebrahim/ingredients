@@ -147,9 +147,7 @@ class ReductionRuleMixture:
 
   def match_lhs(self,mixture):
     """ Match the lhs pattern to the given Mixture.
-        Return a dict representing the match; the dict maps
-        modifier and ingredient variables in the lhs to lists of
-        modifiers and ingredient elements selected from the given Mixture
+        Return None or a pair as described in match_mixture_pattern
     """
     return match_mixture_pattern(self.lhs.components,mixture.components,self.inheritance_check)
 
@@ -158,11 +156,12 @@ class ReductionRuleMixture:
     """ Apply the reduction rule to the given Mixture
         Return the resulting Mixture
     """
-    match = self.match_lhs(mixture)
-    if match is None:
+    match_result = self.match_lhs(mixture)
+    if match_result is None:
       return mixture # No match, mixture is already reduced wrt this rule
+    match_dict, remaining_components = match_result
     result = Mixture()
-    result.components = [apply_substitution_to_component(c, match) for c in self.rhs.components]
+    result.components = [apply_substitution_to_component(c, match_dict) for c in self.rhs.components] + remaining_components
     return result
 
 
@@ -174,12 +173,14 @@ def match_mixture_pattern(pattern_components,components,inheritance_check,partia
   components is a list of components, each of which is a list of tokens that are probably all constants
   inheritance_check is the same parameter showing up in match_pattern
   partial_match helps with recursion, ignore for normal usage
-  Returns a dict mapping modifier and ingredient variables to the constants showing up in components
+  Returns None if there is no match. If there is a match then it returns a pair consisting of:
+  (1) a dict mapping modifier and ingredient variables to the constants showing up in components
+  (2) a list of components that were not involved in the match
   This CAN handle repeated variables, but not if they are repeated within the same component
   (Because match_pattern cannot handle repeated variables within a component)
   """
   if not pattern_components:
-    return partial_match
+    return partial_match,components
   for pattern_component in pattern_components:
     for component in components:
       component_match = match_pattern(pattern_component,component,inheritance_check)
