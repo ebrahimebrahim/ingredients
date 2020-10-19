@@ -115,6 +115,7 @@ class Food:
 class IngredientsCmd(cmd.Cmd):
   intro = 'Type ? to list commands.\n'
   prompt = 'ingdts> '
+  file = None
 
   def preloop(self):
     self.foods = []
@@ -199,6 +200,25 @@ class IngredientsCmd(cmd.Cmd):
 
   def complete_get(self, text, line, begidx, endidx):
     return [ing.name for ing in ingredients]
+
+
+    # ----- record and playback ----- (Copied from the example in the docs)
+  def do_record(self, arg):
+    'Save future commands to filename:  record cake.recipe'
+    self.file = open(arg, 'w')
+  def do_playback(self, arg):
+    'Playback commands from a file:  playback cake.recipe'
+    self.close()
+    with open(arg) as f:
+      self.cmdqueue.extend(f.read().splitlines())
+  def precmd(self, line):
+    if self.file and 'playback' not in line:
+      print(line, file=self.file)
+    return line
+  def close(self):
+    if self.file:
+      self.file.close()
+      self.file = None
 
 
 
