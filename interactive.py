@@ -113,7 +113,7 @@ class Food:
 
 
 class IngredientsCmd(cmd.Cmd):
-  intro = 'Type ? to list commands.\n'
+  intro = "Type ? to list commands. (Hint: start with 'help get')\n"
   prompt = 'ingdts> '
   file = None
 
