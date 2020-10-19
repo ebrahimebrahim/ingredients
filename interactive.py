@@ -47,7 +47,7 @@ class Food:
       self.marked_for_deletion = True
 
   def apply_action_from_attribute(self,attribute):
-    for component in self.mixture.components:
+    for component in self.mixture.components[:]:
       # extract base ingredient from component, asserting that it's a const
       ing_name = component.tokens[-1]
       if token_type(ing_name) != 'constant':
