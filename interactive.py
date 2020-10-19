@@ -56,8 +56,17 @@ class Food:
       # split that attribute value on ';' to get a list "actions"
       actions = [a.strip() for a in actions_string.split(';')]
       for action in actions:
-        print("Didn't know what to do with this action: "+action)
-        # if branch on different actions like "gain_mod" and "yield", and transform component and mixture accordingly
+        # condition on different actions like "gain_mod" and "yield", and transform component and mixture accordingly
+        args = action.split()
+        if not args or args[0]=='nothing':
+          print("Nothing happens when you {} {}".format(attribute,ing_name))
+        elif args[0]=='gain_mod':
+          if len(args)!=2:
+            print("Invalid arguments in action:",action)
+          else:
+            component.tokens.insert(0,args[1])
+        else:
+          print("Didn't know what to do with this action: "+action)
     # reduce the mixture using reduction system made out of parsed reductions file
     self.reduce()
 
@@ -159,7 +168,7 @@ class IngredientsCmd(cmd.Cmd):
       self.report_foods()
     return stop
 
-  def completedefault(self, text, line, begidx, endidx):
+  def complete_get(self, text, line, begidx, endidx):
     return [ing.name for ing in ingredients]
 
 
