@@ -142,7 +142,7 @@ class IngredientsCmd(cmd.Cmd):
   def report_foods(self):
     print()
     if not self.foods:
-      print("[No foods]")
+      print("\t[No foods]")
     for i,food in enumerate(self.foods):
       print("\t{}: {}".format(i,str(food)))
     print()
@@ -151,6 +151,9 @@ class IngredientsCmd(cmd.Cmd):
     if not stop:
       self.report_foods()
     return stop
+
+  def completedefault(self, text, line, begidx, endidx):
+    return [ing.name for ing in ingredients]
 
 
 
