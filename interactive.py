@@ -63,15 +63,14 @@ class Food:
     # Similarly "None" should not show up as a name of an ingdt
     # It should be noted somewhere that Fat and Water are special ingdt names for the purpose of cook action
     # They, or anything that inherits from them, will be treated specially for cook
-    for component in self.mixture.components:
-      if not self.in_container:
-        self.apply_action_from_attribute("cook_flame")
-      elif any(inheritance_check(component.tokens[-1],"Water") for component in self.mixture.components):
-        self.apply_action_from_attribute("cook_boil")
-      elif any(inheritance_check(component.tokens[-1],"Fat") for component in self.mixture.components):
-        self.apply_action_from_attribute("cook_fry")
-      else:
-        self.apply_action_from_attribute("cook_bake")
+    if not self.in_container:
+      self.apply_action_from_attribute("cook_flame")
+    elif any(inheritance_check(component.tokens[-1],"Water") for component in self.mixture.components):
+      self.apply_action_from_attribute("cook_boil")
+    elif any(inheritance_check(component.tokens[-1],"Fat") for component in self.mixture.components):
+      self.apply_action_from_attribute("cook_fry")
+    else:
+      self.apply_action_from_attribute("cook_bake")
 
   def __str__(self):
     pot_str = "Pot containing " if self.in_container else ""
