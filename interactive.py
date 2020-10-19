@@ -32,9 +32,13 @@ class Food:
     self.mixture = mixture
     self.in_container = in_container
 
+  def reduce(self):
+    self.mixture = rs.reduce_mixture(self.mixture)
+
   def mix_in(self, other):
     self.in_container = self.in_container or other.in_container
     self.mixture.components += other.mixture.components
+    self.reduce()
 
   def apply_action_from_attribute(self,attribute):
     for component in self.mixture.components:
@@ -55,7 +59,7 @@ class Food:
         print("Didn't know what to do with this action: "+action)
         # if branch on different actions like "gain_mod" and "yield", and transform component and mixture accordingly
     # reduce the mixture using reduction system made out of parsed reductions file
-    self.mixture = rs.reduce_mixture(self.mixture)
+    self.reduce()
 
   def cook(self):
     # Note that cook is a "keyword" and should never show up as an attribute name
