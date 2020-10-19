@@ -106,16 +106,19 @@ class IngredientsCmd(cmd.Cmd):
     print('Grab an ingredient : get Onion\nPossible ingredients: '+', '.join(ing.name for ing in ingredients))
 
   def do_mix(self,arg):
-    'Mix two foods of the indicated indices in the list: mix 2 3'
+    'Mix foods of the indicated indices in the list: mix 2 3 5'
     try:
-      i_str,j_str=arg.split()
-      i,j = int(i_str), int(j_str)
-      assert(i>=0 and j>=0 and i<len(self.foods) and j<len(self.foods) and i!=j)
+      indices = list(set(int(index_str) for index_str in arg.split()))
+      assert(len(indices)>1)
+      for i in indices:
+        assert(i>=0 and i<len(self.foods))
     except:
-      print("Error: arguments should be two distinct valid indices of food items from the list.")
+      print("Error: arguments should be at least two distinct valid indices of food items from the list.")
       return
-    self.foods[i].mix_in(self.foods[j])
-    self.foods.pop(j)
+    i = indices.pop(0)
+    for j in indices:
+      self.foods[i].mix_in(self.foods[j])
+    self.foods = [self.foods[k] for k in range(len(self.foods)) if k not in indices]
 
   def do_pot(self, arg):
     'Put the indicated food into a pot or remove it if it is already: pot 2'
