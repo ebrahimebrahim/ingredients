@@ -31,6 +31,7 @@ class Food:
   def __init__(self,mixture=Mixture(),in_container=False):
     self.mixture = mixture
     self.in_container = in_container
+    self.marked_for_deletion = False
 
   def reduce(self):
     self.mixture = rs.reduce_mixture(self.mixture)
@@ -39,6 +40,11 @@ class Food:
     self.in_container = self.in_container or other.in_container
     self.mixture.components += other.mixture.components
     self.reduce()
+
+  def remove_component(self,component):
+    self.mixture.components.remove(component)
+    if not self.mixture.components:
+      self.marked_for_deletion = True
 
   def apply_action_from_attribute(self,attribute):
     for component in self.mixture.components:
@@ -65,6 +71,11 @@ class Food:
             print("Invalid arguments in action:",action)
           else:
             component.tokens.insert(0,args[1])
+        elif args[0]=='delete':
+          if len(args)!=1:
+            print("Invalid arguments in action:",action)
+          else:
+            self.remove_component(component)
         else:
           print("Didn't know what to do with this action: "+action)
     # reduce the mixture using reduction system made out of parsed reductions file
@@ -165,6 +176,9 @@ class IngredientsCmd(cmd.Cmd):
 
   def postcmd(self,stop,line):
     if not stop:
+      for food in self.foods:
+        if food.marked_for_deletion:
+          self.foods.remove(food)
       self.report_foods()
     return stop
 
