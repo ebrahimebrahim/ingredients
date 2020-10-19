@@ -32,6 +32,10 @@ class Food:
     self.mixture = mixture
     self.in_container = in_container
 
+  def mix_in(self, other):
+    self.in_container = self.in_container or other.in_container
+    self.mixture.components += other.mixture.components
+
   def apply_action_from_attribute(self,attribute):
     for component in self.mixture.components:
       # extract base ingredient from component, asserting that it's a const
@@ -102,6 +106,18 @@ class IngredientsCmd(cmd.Cmd):
   def help_get(self):
     print('Grab an ingredient : get Onion\nPossible ingredients: '+', '.join(ing.name for ing in ingredients))
 
+  def do_mix(self,arg):
+    'Mix two foods of the indicated indices in the list: mix 2 3'
+    try:
+      i_str,j_str=arg.split()
+      i,j = int(i_str), int(j_str)
+      assert(i>=0 and j>=0 and i<len(self.foods) and j<len(self.foods) and i!=j)
+    except:
+      print("Error: arguments should be two distinct valid indices of food items from the list.")
+      return
+    self.foods[i].mix_in(self.foods[j])
+    self.foods.pop(j)
+
   def do_quit(self, arg):
     'Quit:  quit'
     print('peupe.')
@@ -126,7 +142,7 @@ class IngredientsCmd(cmd.Cmd):
     for i,food in enumerate(self.foods):
       print("\t{}: {}".format(i,str(food)))
     print()
-    
+
   def postcmd(self,stop,line):
     if not stop:
       self.report_foods()
