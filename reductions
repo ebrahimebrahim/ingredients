@@ -8,7 +8,8 @@
 
 
 # The syntax "A + B = C" is a way of saying "m1 A m2 B m3 i1 -> C m1 m2 m3 i1" and "m1 B m2 A m3 i1 -> C m1 m2 m3 i1"
-fried + fried = 0.25 * burnt + 0.75 * fried # Consider doing it probabilisitically like this
+# fried + fried = 0.25 * burnt + 0.75 * fried # <--- Consider doing it probabilisitically like this
+fried + fried = burnt
 toasted + toasted = burnt
 baked + baked = burnt
 fried + burnt = extremely_burnt
@@ -22,6 +23,11 @@ chopped+chopped = minced
 minced+chopped=finely_minced
 finely_minced+chopped=mashed
 mashed+chopped=mashed
+
+
+crushed+crushed=crushed
+
+
 
 # Note that become_ash is an auxiliary modifier that gives us an easier way to specify a reduction by breaking it into multiple steps
 m1 become_ash m2 i1 -> Ash

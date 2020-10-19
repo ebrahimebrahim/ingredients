@@ -1,0 +1,10 @@
+name: Ash
+abstract: False
+inherit: None
+chop: gain_mod chopped
+press: nothing
+cook_flame: nothing
+cook_fry: nothing
+cook_boil: nothing
+cook_toast: nothing
+cook_bake: nothing

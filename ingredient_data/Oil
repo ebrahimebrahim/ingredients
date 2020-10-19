@@ -1,10 +1,4 @@
 name: Oil
 abstract: False
-inherit: None
-chop: nothing
-press: nothing
-cook_flame: gain_mod on_fire
-cook_fry: nothing
-cook_boil: nothing
-cook_toast: nothing
-cook_bake: nothing
+inherit: Fat
+
