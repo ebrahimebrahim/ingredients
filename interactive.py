@@ -118,6 +118,11 @@ class IngredientsCmd(cmd.Cmd):
     self.foods[i].mix_in(self.foods[j])
     self.foods.pop(j)
 
+  def do_pot(self, arg):
+    'Put the indicated food into a pot or remove it if it is already: pot 2'
+    if not self.validate_foods_index(arg): return
+    self.foods[int(arg)].in_container = not self.foods[int(arg)].in_container
+
   def do_quit(self, arg):
     'Quit:  quit'
     print('peupe.')
