@@ -223,3 +223,48 @@ def token_type(token):
         raise Exception("Invalid token '{}', a constant must come after the colon".format(token))
     return "qualified ingredient variable"
   return "constant"
+
+
+class ReductionSystem:
+  """Initialize with a list of ReductionRuleComponent and a list of ReductionRuleMixture
+  """
+  def __init__(self, component_rules, mixture_rules):
+    self.component_rules = component_rules
+    self.mixture_rules = mixture_rules
+    self.max_iterations = 1000
+
+  def reduce_component(self, component):
+    """ Repeatedly apply the component rules until component is fully reduced
+        Return reduced form.
+        Here component is assumed to be a string of space separated tokens
+    """
+    result = component
+    for i in range(self.max_iterations):
+      old_result = result
+      for rule in self.component_rules:
+        result = rule.apply(result)
+      if old_result == result:
+        return result
+    raise Exception("Timed out while reducing the component '{}'. Was stuck at '{}'.\n\
+      \t Is there a cycle in your reduction system?".format(component,result))
+
+  def reduce_mixture(self, mixture):
+    """ First reduce all components of the mixture.
+        Then repeatedly apply the mixture rules until mixture is fully reduced
+        Return reduced form.
+        Here component is assumed to be a Mixture.
+    """
+    result = [self.reduce_component(' '.join(c)).split() for c in mixture.components]
+
+    for i in range(self.max_iterations):
+      old_result = copy.deepcopy(result)
+      for rule in self.mixture_rules:
+        m = Mixture()
+        m.components = result
+        result = rule.apply(m).components
+      if old_result == result:
+        m = Mixture()
+        m.components = result
+        return m
+    raise Exception("Timed out while reducing the mixture '{}'. Was stuck at '{}'.\n\
+      \t Is there a cycle in your reduction system?".format(mixture,result))

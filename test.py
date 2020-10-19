@@ -1,6 +1,6 @@
 import unittest
 import parse_reductions
-from util import Ingredient,ReductionRuleMixture,ReductionRuleComponent,token_type,match_pattern,Mixture
+from util import Ingredient,ReductionRuleMixture,ReductionRuleComponent,token_type,match_pattern,Mixture,ReductionSystem
 
 
 class TestMatchPattern(unittest.TestCase):
@@ -131,6 +131,12 @@ class TestReductionRuleMixture(unittest.TestCase):
       str(self.rrm.apply(Mixture("(powdered Oat) + (Apple Water)")))
     )
 
+  def test_apply2(self):
+    self.assertEqual(
+      "(Apple Oat Dough) + (fried Potato)",
+      str(self.rrm.apply(Mixture("(powdered Oat) + (Apple Water) + (fried Potato)")))
+    )
+
 
 
 class TestRuleParsers(unittest.TestCase):
@@ -216,6 +222,28 @@ class TestRuleParsers(unittest.TestCase):
     # Verify correct token counts
     self.assertEqual([len(c) for c in r.lhs.components],[2,2])
     self.assertEqual([len(c) for c in r.rhs.components],[4])
+
+
+class TestReductionSystem(unittest.TestCase):
+
+  def test_component_reduction(self):
+    crules = parse_reductions.parse_component_reduction_rule("happy + sad = neutral")
+    crules += parse_reductions.parse_component_reduction_rule("neutral + neutral = neutral")
+    crules += parse_reductions.parse_component_reduction_rule("happy + mad = manic")
+    rs = ReductionSystem(crules,[])
+    reduced = rs.reduce_component("happy happy happy sad sad mad Person")
+    self.assertEqual("neutral manic Person",reduced)
+
+  def test_mixture_reduction(self):
+    mrules = [parse_reductions.parse_mixture_reduction_rule("(m1 powdered m2 i1:Grain) + (m3 Water) -> (m1 m2 m3 i1 Dough)")]
+    mrules[-1].inheritance_check = lambda c,p : c=='Oat' and p=='Grain'
+    mrules.append(parse_reductions.parse_mixture_reduction_rule("(m1 i1:Water) + (m2 i2:Oil) -> (m1 m2 i2 oily i1)"))
+    mrules[-1].inheritance_check = lambda c,p : c==p
+    crules = parse_reductions.parse_component_reduction_rule("crushed +> dried = powdered")
+    rs = ReductionSystem(crules,mrules)
+    reduced = rs.reduce_mixture(Mixture("(crushed dried Oat) + (Apple Water) + Oil"))
+    self.assertEqual("oily Apple Oat Dough",str(reduced))
+
 
 
 
