@@ -80,30 +80,57 @@ class IngredientsCmd(cmd.Cmd):
   prompt = 'ingdts> '
 
   def preloop(self):
-    self.food = Food(Mixture("Onion"))
-    self.report_food()
+    self.foods = []
 
   def do_chop(self, arg):
-    'Chop the food : chop'
-    self.food.apply_action_from_attribute('chop')
-    self.report_food()
+    'Chop the food of the indicated index in the list : chop 3'
+    if not self.validate_foods_index(arg): return
+    self.foods[int(arg)].apply_action_from_attribute('chop')
+
   def do_cook(self, arg):
-    'Cook the food : cook'
-    self.food.cook()
-    self.report_food()
+    'Cook the food of the indicated index in the list : cook 2'
+    if not self.validate_foods_index(arg): return
+    self.foods[int(arg)].cook()
+
+  def do_get(self, arg):
+    'Grab an ingredient : get Onion'
+    if arg not in ingredients_byname:
+      print("Not an ingredient. Possible ingredients: "+', '.join(ing.name for ing in ingredients))
+      return
+    self.foods.append(Food(Mixture(arg)))
+
+  def help_get(self):
+    print('Grab an ingredient : get Onion\nPossible ingredients: '+', '.join(ing.name for ing in ingredients))
+
   def do_quit(self, arg):
     'Quit:  quit'
     print('peupe.')
     return True
+
   def do_EOF(self, arg):
     'Quit (press ctrl+D)'
     print('peup.')
     return True
 
-  def report_food(self):
+  def validate_foods_index(self,i_str):
+    'Should be True iff self.foods[int(arg)] wont blow up'
+    out = i_str.isnumeric() and int(i_str) >= 0 and int(i_str) < len(self.foods)
+    if not out:
+      print("Error: argument should be the number of a food item from the displayed list of foods.")
+    return out
+
+  def report_foods(self):
     print()
-    print('\t'+str(self.food))
+    if not self.foods:
+      print("[No foods]")
+    for i,food in enumerate(self.foods):
+      print("\t{}: {}".format(i,str(food)))
     print()
+    
+  def postcmd(self,stop,line):
+    if not stop:
+      self.report_foods()
+    return stop
 
 
 
