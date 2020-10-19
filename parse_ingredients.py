@@ -108,10 +108,20 @@ def parse(ingredients_dir):
 def main():
   ingredients = parse(INGREDIENTS_DIR)
   print("Got the following ingredients:")
+  print('\t'+', '.join(ing.name for ing in ingredients))
+
+  print("\nGot the following attributes:")
+  attributes = set()
   for ing in ingredients:
-    print()
-    print(ing.name)
-    print("\t",ing.__dict__)
+    attributes.update(ing.__dict__.keys())
+  print('\t'+', '.join(attributes))
+
+  print("\nGot the following actions:")
+  actions = set()
+  for ing in ingredients:
+    ing_actions = (ing.__dict__[k] for k in ing.__dict__.keys() if k not in ['name'] and type(ing.__dict__[k])==str)
+    actions.update(ing_actions)
+  print('\n'.join(actions))
 
 
 if __name__ == '__main__' :
