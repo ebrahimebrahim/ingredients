@@ -76,6 +76,16 @@ class Food:
             print("Invalid arguments in action:",action)
           else:
             self.remove_component(component)
+        elif args[0]=='yield':
+          if len(args)<2:
+            print("Invalid arguments in action:",action)
+          else:
+            new_component_tokens = [t if t!='SELF' else ing_name for t in args[1:]]
+            new_ing_name = new_component_tokens[-1]
+            if new_ing_name not in ingredients_byname:
+              print("Warning: a yield action from {} has produced an ingredient {} that does not exist.\
+                This is probaly bad.".format(ing_name,new_ing_name))
+            self.mixture.components.append(Component(new_component_tokens))
         else:
           print("Didn't know what to do with this action: "+action)
     # reduce the mixture using reduction system made out of parsed reductions file
@@ -113,6 +123,11 @@ class IngredientsCmd(cmd.Cmd):
     'Chop the food of the indicated index in the list : chop 3'
     if not self.validate_foods_index(arg): return
     self.foods[int(arg)].apply_action_from_attribute('chop')
+
+  def do_press(self, arg):
+    'Press the food of the indicated index in the list : press 3'
+    if not self.validate_foods_index(arg): return
+    self.foods[int(arg)].apply_action_from_attribute('press')
 
   def do_cook(self, arg):
     'Cook the food of the indicated index in the list : cook 2'

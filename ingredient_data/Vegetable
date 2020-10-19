@@ -1,8 +1,14 @@
+# 
+
 name: Vegetable
 abstract: True
 inherit: None
 chop: gain_mod chopped
-press: gain_mod shriveled; yield INGREDIENT_TO_MODIFIER(self) Water
+
+# SELF in a yield statement resolves to the name of the current ingredient
+# (So not Vegetable, but whatever concrete Vegetable this is getting called from)
+press: gain_mod shriveled; yield SELF Water
+
 cook_flame: gain_mod charred
 cook_fry: gain_mod fried
 cook_boil: gain_mod boiled
