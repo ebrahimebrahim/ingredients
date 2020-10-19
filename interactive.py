@@ -142,6 +142,11 @@ class IngredientsCmd(cmd.Cmd):
       return
     self.foods.append(Food(Mixture(arg)))
 
+  def do_dump(self, arg):
+    'Dump out a food item from the list: dump 2'
+    if not self.validate_foods_index(arg): return
+    self.foods.pop(int(arg))
+
   def help_get(self):
     print('Grab an ingredient : get Onion\nPossible ingredients: '+', '.join(ing.name for ing in ingredients))
 
