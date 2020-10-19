@@ -15,120 +15,162 @@ class Ingredient:
     self.inherited_from = inherited_from
 
 
+class Component:
+  """ Wraps a list of tokens.
+      A token is one of the following strings:
+      - "m1", "m2", etc. : These are modifier variables
+      - "i1", "i2", etc. : These are ingredient variables
+      - "i1:Vegetable", "i2:Water", etc. : These are ingredient variables which
+        only match ingredients that derive from a specified base ingredient
+      - a constant: The name of an ingredient variable
+      The initializer can be
+      - a string representation of a token, which is space separated
+      - a list of tokens
+      - another Component (in which case a copy is created)
+  """
+  def __init__(self,init=None):
+    if init is None:
+      self.tokens = []
+    elif isinstance(init,str):
+      self.tokens = [t.strip() for t in init.split()]
+    elif isinstance(init,list):
+      self.tokens = init
+    elif isinstance(init,Component):
+      self.tokens = copy.deepcopy(init.tokens)
+    else:
+      raise Exception("Cannot initialize a Component with '{}', which is of type '{}'".format(init,type(init)))
+
+  def __str__(self):
+    return ' '.join(self.tokens)
+
+  def __eq__(self,other):
+    return self.tokens==other.tokens
+
+
+
+class Mixture:
+  """ Wraps a list of components.
+  The initializer can be
+  - a string representation of a token, which is a '+' separated list of parenthesized
+  (string-represented) components
+  - a list of Components
+  - another Mixture (in which case a copy is created)
+  """
+  def __init__(self,init=None):
+    if init is None:
+      self.components = []
+    elif isinstance(init,str):
+      self.components = [Component(c.strip('() ')) for c in init.split('+')]
+    elif isinstance(init,list):
+      self.components = init
+    elif isinstance(init,Mixture):
+      self.components = copy.deepcopy(init.components)
+    else:
+      raise Exception("Cannot initialize a Mixture with '{}', which is of type '{}'".format(init,type(init)))
+
+  def __str__(self):
+    return ' + '.join('(' + str(component) + ')' for component in self.components)
+
+  def __eq__(self,other):
+    return self.components==other.components
+
 
 class ReductionRuleComponent:
   """ A ReductionRuleComponent represents a rule that converts things matching the lhs pattern to the form described by the rhs
-      The lhs and rhs are both lists of tokens. A token is one of the following strings:
-      - "m1", "m2", etc. : These are modifier variables
-      - "i1", "i2", etc. : These are ingredient variables
-      - "i1:Vegetable", "i2:Water", etc. : These are ingredient variables which only match ingredients that derive from a specified base ingredient
-      - a constant: The name of an ingredient variable
+      The lhs and rhs are both components, or they can be passed in as strings or lists of tokens.
       inheritance_check is the function that will be used to match qualified ingredient variables
       when applying the reduction rule to components.
       So for example the pattern i1:Vegetable will match the component Onion only if
       inheritance_check(Onion,Vegetable) is True
   """
   def __init__(self, lhs, rhs, inheritance_check = lambda child,parent : True):
-    self.lhs = lhs
-    self.rhs = rhs
+    self.lhs = Component(lhs)
+    self.rhs = Component(rhs)
     self.inheritance_check = inheritance_check
 
   def __str__(self):
-    return ' '.join(self.lhs) + " -> " + ' '.join(self.rhs)
+    return str(self.lhs) + " -> " + str(self.rhs)
 
   def match_lhs(self,component):
-    """ Match the pattern of the lhs to the given component, and return
+    """ Match the pattern of the lhs to the given Component, and return
     a dict representing the match. Return None if there is no match.
-    The given component is assumed to be a list of strings that are
-    "constant" tokens. (Remember, a component is an ingredient with a bunch of modifiers in front)
-    Returns the match, which is a dict whose keys are the variables in the lhs of this recursion,
-    and whose values are lists of elements of component.
+    It makes sense for the tokens of Component to all be constant type.
+    Returns the match, which is a dict whose keys are the variables in the lhs,
+    and whose values are lists of tokens selected from component.
     """
-    return match_pattern(self.lhs,component,self.inheritance_check)
+    return match_pattern(self.lhs.tokens,component.tokens,self.inheritance_check)
 
   def apply(self,component):
-    """ Apply the reduction rule to the given component
-        component is a string (a bunch of modifiers and then an ingredient, separated by spaces)
-        Returns the result of applying the rule to component
+    """ Apply the reduction rule to the given Component
+        Returns a Component, the result of applying the rule to component
     """
-    match = self.match_lhs(component.split())
+    match = self.match_lhs(component)
     if match is None:
       return component # No match, component is already reduced wrt this rule
-    return ' '.join(apply_substitution_to_component(self.rhs,match))
+
+    return apply_substitution_to_component(self.rhs,match)
 
 
 def apply_substitution_to_component(component, subst_dict):
-  """ Given a component as a list of tokens, and given a subst_dict mapping variables
+  """ Given a Component and given a subst_dict mapping variables
   in that component to constants, return a version of component with all the substitutions
   have been carried out. """
-  result = []
-  for token in component:
+  result_tokens = []
+  for token in component.tokens:
     if token_type(token) in ["modifier variable","basic ingredient variable"]:
       if not subst_dict[token]: # If it's an empty list
         continue
-      result += subst_dict[token]
+      result_tokens += subst_dict[token]
     elif token_type(token)=="qualified ingredient variable":
       ivar = token.split(':')[0]
-      result += subst_dict[ivar]
+      result_tokens += subst_dict[ivar]
     elif token_type(token)=="constant":
-      result.append(token)
-  return result
+      result_tokens.append(token)
+  return Component(result_tokens)
 
 
 
-def match_pattern(pattern,component,inheritance_check):
-  """ Match the pattern to the component, and return the match dict.
-  component is a list of tokens, which are strings
+def match_pattern(pattern,tokens,inheritance_check):
+  """ Match the pattern to the component defined by the given list of tokens,
+  and return the match dict.
+  pattern is a list of tokens
+  tokens is a list of tokens
   Returns None if there is no match.
   See the docstring on ReductionRuleComponent.match_lhs
   """
   if not pattern:
-    return None if component else {}
+    return None if tokens else {}
   fst = pattern[0]
   if token_type(fst)=="modifier variable":
-    for i in range(len(component)+1): # For each initial segment component[:i]
-      result = match_pattern(pattern[1:],component[i:],inheritance_check)
+    for i in range(len(tokens)+1): # For each initial segment tokens[:i]
+      result = match_pattern(pattern[1:],tokens[i:],inheritance_check)
       if result is not None:
-        result[fst] = component[:i]
+        result[fst] = tokens[:i]
         return result
     return None
   if token_type(fst)=="constant":
-    if not component:
+    if not tokens:
       return None
-    if fst == component[0]:
-      return match_pattern(pattern[1:],component[1:],inheritance_check)
+    if fst == tokens[0]:
+      return match_pattern(pattern[1:],tokens[1:],inheritance_check)
     return None
   if token_type(fst)=="basic ingredient variable":
     if len(pattern)!=1:
       raise Exception("Encountered a pattern with an ingredient variable in the middle of it")
-    if len(component)!=1:
+    if len(tokens)!=1:
       return None
-    return {fst:[component[0]]}
+    return {fst:[tokens[0]]}
   if token_type(fst)=="qualified ingredient variable":
     if len(pattern)!=1:
       raise Exception("match_pattern: Encountered a pattern with an ingredient variable in the middle of it")
-    if len(component)!=1:
+    if len(tokens)!=1:
       return None
     ivar,parent = fst.split(":")
-    if inheritance_check(component[0],parent):
-      return {ivar:[component[0]]}
+    if inheritance_check(tokens[0],parent):
+      return {ivar:[tokens[0]]}
     return None
   raise Exception("match_pattern: Encountered an invalid pattern:",pattern)
 
-
-class Mixture:
-  """ Wraps a list of components.
-      A component is a list of tokens, the same tokens described in ReductionRuleComponent
-  """
-  def __init__(self,string=None):
-    if string is None:
-      self.components = []
-    else:
-      self.components = [c.strip('() ').split() for c in string.split('+')]
-
-
-  def __str__(self):
-    return ' + '.join('(' + ' '.join(component) + ')' for component in self.components)
 
 
 class ReductionRuleMixture:
@@ -160,17 +202,14 @@ class ReductionRuleMixture:
     if match_result is None:
       return mixture # No match, mixture is already reduced wrt this rule
     match_dict, remaining_components = match_result
-    result = Mixture()
-    result.components = [apply_substitution_to_component(c, match_dict) for c in self.rhs.components] + remaining_components
-    return result
+    return Mixture([apply_substitution_to_component(c, match_dict) for c in self.rhs.components] + remaining_components)
 
 
 
 def match_mixture_pattern(pattern_components,components,inheritance_check,partial_match={}):
   """
-  pattern_components is a list of components, each of which is a list of tokens probably
-  consisting of modifier and ingredient variables
-  components is a list of components, each of which is a list of tokens that are probably all constants
+  pattern_components is a list of Components, probably consisting of some variables
+  components is a list of Components, probably consisnting of only constants
   inheritance_check is the same parameter showing up in match_pattern
   partial_match helps with recursion, ignore for normal usage
   Returns None if there is no match. If there is a match then it returns a pair consisting of:
@@ -183,7 +222,7 @@ def match_mixture_pattern(pattern_components,components,inheritance_check,partia
     return partial_match,components
   for pattern_component in pattern_components:
     for component in components:
-      component_match = match_pattern(pattern_component,component,inheritance_check)
+      component_match = match_pattern(pattern_component.tokens,component.tokens,inheritance_check)
       if component_match is not None:
         if all(k not in partial_match or component_match[k]==partial_match[k] for k in component_match):
           pattern_components_reduced = copy.deepcopy(pattern_components)
@@ -237,7 +276,7 @@ class ReductionSystem:
   def reduce_component(self, component):
     """ Repeatedly apply the component rules until component is fully reduced
         Return reduced form.
-        Here component is assumed to be a string of space separated tokens
+        component is a Component
     """
     result = component
     for i in range(self.max_iterations):
@@ -255,17 +294,13 @@ class ReductionSystem:
         Return reduced form.
         Here component is assumed to be a Mixture.
     """
-    result = [self.reduce_component(' '.join(c)).split() for c in mixture.components]
+    result = Mixture([self.reduce_component(c) for c in mixture.components])
 
     for i in range(self.max_iterations):
-      old_result = copy.deepcopy(result)
+      old_result = Mixture(result)
       for rule in self.mixture_rules:
-        m = Mixture()
-        m.components = result
-        result = rule.apply(m).components
+        result = rule.apply(result)
       if old_result == result:
-        m = Mixture()
-        m.components = result
-        return m
+        return result
     raise Exception("Timed out while reducing the mixture '{}'. Was stuck at '{}'.\n\
       \t Is there a cycle in your reduction system?".format(mixture,result))

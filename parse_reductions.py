@@ -1,5 +1,5 @@
 import itertools
-from util import ReductionRuleComponent, ReductionRuleMixture, Mixture, token_type
+from util import ReductionRuleComponent, ReductionRuleMixture, Mixture, token_type, Component
 
 REDUCTIONS_FILENAME = "reductions"
 
@@ -25,9 +25,7 @@ def parse_component_reduction_rule(line):
 def parse_primitive_reduction_rule(line):
   """ Parse a primitive reduction rule and return the ReductionRuleComponent """
   lhs,rhs = [s.split() for s in line.split('->')]
-  lhs = [t.strip() for t in lhs]
-  rhs = [t.strip() for t in rhs]
-  return ReductionRuleComponent(lhs,rhs)
+  return ReductionRuleComponent(Component(lhs),Component(rhs))
 
 def parse_concise_reduction_rule(line):
   """ Parse a reduction rule of the form that uses +> and return the ReductionRuleComponent """

@@ -1,6 +1,6 @@
 import unittest
 import parse_reductions
-from util import Ingredient,ReductionRuleMixture,ReductionRuleComponent,token_type,match_pattern,Mixture,ReductionSystem
+from util import Ingredient,ReductionRuleMixture,ReductionRuleComponent,token_type,match_pattern,Mixture,Component,ReductionSystem
 
 
 class TestMatchPattern(unittest.TestCase):
@@ -87,10 +87,9 @@ class TestMatchPattern(unittest.TestCase):
 class TestReductionRuleComponent(unittest.TestCase):
 
   def setUp(self):
-    self.rrc = ReductionRuleComponent(['m1', 'fried', 'm2', 'chopped', 'm3', 'Potato'], ['m1', 'm2', 'm3', 'FrenchFries'])
-    self.component_str = "dirty zesty fried chopped salty Potato"
-    self.reduced_str = "dirty zesty salty FrenchFries"
-    self.component_list = self.component_str.split()
+    self.rrc = ReductionRuleComponent(Component('m1 fried m2 chopped m3 Potato'),Component('m1 m2 m3 FrenchFries'))
+    self.component = Component("dirty zesty fried chopped salty Potato")
+    self.reduced_component = Component("dirty zesty salty FrenchFries")
     self.match_lhs_result = {
       "m1" : ['dirty','zesty'],
       "m2" : [],
@@ -101,10 +100,10 @@ class TestReductionRuleComponent(unittest.TestCase):
     self.assertEqual(str(self.rrc), 'm1 fried m2 chopped m3 Potato -> m1 m2 m3 FrenchFries')
 
   def test_match_lhs(self):
-    self.assertEqual(self.match_lhs_result, self.rrc.match_lhs(self.component_list))
+    self.assertEqual(self.match_lhs_result, self.rrc.match_lhs(self.component))
 
   def test_apply(self):
-    self.assertEqual(self.reduced_str, self.rrc.apply(self.component_str))
+    self.assertEqual(str(self.reduced_component), str(self.rrc.apply(self.component)))
 
 
 
@@ -189,8 +188,8 @@ class TestRuleParsers(unittest.TestCase):
 
     # Verify correct token count
     r = parsed[3][0]
-    self.assertEqual(len(r.lhs),4)
-    self.assertEqual(len(r.rhs),4)
+    self.assertEqual(len(r.lhs.tokens),4)
+    self.assertEqual(len(r.rhs.tokens),4)
 
     # Check that it duplicate variable names:
     p = parse_reductions.parse_component_reduction_rule("baked +> m3 = baked")
@@ -220,8 +219,8 @@ class TestRuleParsers(unittest.TestCase):
     self.assertEqual(len(r.rhs.components),1)
 
     # Verify correct token counts
-    self.assertEqual([len(c) for c in r.lhs.components],[2,2])
-    self.assertEqual([len(c) for c in r.rhs.components],[4])
+    self.assertEqual([len(c.tokens) for c in r.lhs.components],[2,2])
+    self.assertEqual([len(c.tokens) for c in r.rhs.components],[4])
 
 
 class TestReductionSystem(unittest.TestCase):
@@ -231,8 +230,8 @@ class TestReductionSystem(unittest.TestCase):
     crules += parse_reductions.parse_component_reduction_rule("neutral + neutral = neutral")
     crules += parse_reductions.parse_component_reduction_rule("happy + mad = manic")
     rs = ReductionSystem(crules,[])
-    reduced = rs.reduce_component("happy happy happy sad sad mad Person")
-    self.assertEqual("neutral manic Person",reduced)
+    reduced = rs.reduce_component(Component("happy happy happy sad sad mad Person"))
+    self.assertEqual("neutral manic Person",str(reduced))
 
   def test_mixture_reduction(self):
     mrules = [parse_reductions.parse_mixture_reduction_rule("(m1 powdered m2 i1:Grain) + (m3 Water) -> (m1 m2 m3 i1 Dough)")]
