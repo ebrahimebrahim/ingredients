@@ -1,6 +1,6 @@
 name: Peup
 abstract: False
-inherit: None
+inherit: Tomato
 chop: gain_mod chopped
 press: gain_mod shriveled; yield Peup
 cook_flame: gain_mod charred

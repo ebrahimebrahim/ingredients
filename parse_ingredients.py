@@ -70,29 +70,38 @@ def parse(ingredients_dir):
   attributes.difference_update(["filepath"]+required_attributes)
 
 
+  # A function to recursively load in attributes from ancestors in inheritance tree
+  def load_attributes(target_ing, source_dict):
+    """target_ing is an Ingredient to load attributes into,
+    and source_dict is the ingredient dict from which to load them.
+    This will load attributes from source_dict's ancestors recursively.
+    It will also populate target_ing's inherited_form list, in the order
+    in which attributes are filled in."""
+
+    # First recurse to parents; we load in their attributes to be possibly overridden later
+    for name in parse_inherit_list(source_dict["inherit"]):
+      if name not in ingredient_dicts_byname:
+        raise Exception("Ingredient in {} inherits nonexistent ingredient named {}".format(ing_dict["filepath"],name))
+      load_attributes(target_ing, ingredient_dicts_byname[name])
+
+    source_name = source_dict['name']
+    if source_name != target_ing.name:
+      target_ing.inherited_from.append(source_name)
+
+    for a in source_dict:
+      if a in attributes:
+        target_ing.__dict__[a]=source_dict[a]
+
+
 
 
   ingredients = []  # List of Ingredient objects
   for ing_dict in ingredient_dicts:
     if ing_dict["abstract"]=="True": continue # We don't make entries for abstract ingredients
 
-    inherit_list = parse_inherit_list(ing_dict["inherit"])
+    ing = Ingredient(ing_dict["name"]) # Ingredient to be constructed and appended to ingredients list
 
-    ing = Ingredient(ing_dict["name"],inherit_list) # Ingredient to be constructed and appended to ingredients list
-
-    # Load in attributes from parents in order
-    for name in inherit_list:
-      if name not in ingredient_dicts_byname:
-        raise Exception("Ingredient in {} inherits nonexistent ingredient named {}".format(ing_dict["filepath"],name))
-      parent = ingredient_dicts_byname[name]
-      for a in parent:
-        if a in attributes:
-          ing.__dict__[a]=parent[a]
-
-    # Load in own attributes
-    for a in ing_dict:
-      if a in attributes:
-        ing.__dict__[a]=ing_dict[a]
+    load_attributes(ing, ing_dict) # Recursively load attributes from ancestors and finally self
 
     # Warn about seemingly missing attributes
     for a in attributes:
@@ -108,7 +117,11 @@ def parse(ingredients_dir):
 def main():
   ingredients = parse(INGREDIENTS_DIR)
   print("Got the following ingredients:")
-  print('\t'+', '.join(ing.name for ing in ingredients))
+  for ing in ingredients:
+    print(
+      '\t' + ing.name +
+      ('' if not ing.inherited_from else ' ({})'.format(', '.join(ing.inherited_from)))
+    )
 
   print("\nGot the following attributes:")
   attributes = set()

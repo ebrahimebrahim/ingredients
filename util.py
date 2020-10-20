@@ -10,9 +10,9 @@ class Ingredient:
         If Vegetable file is abstract, then there is will be no Ingredient named "Vegetable"
         But the Ingredient named "Onion" will still remember that it inherited from something called "Vegetable"
   """
-  def __init__(self, name, inherited_from=[]):
+  def __init__(self, name):
     self.name=name
-    self.inherited_from = inherited_from
+    self.inherited_from = []
 
 
 class Component:
