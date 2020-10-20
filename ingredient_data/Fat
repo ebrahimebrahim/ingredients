@@ -1,0 +1,3 @@
+name: Fat
+abstract: True
+inherit: Thing

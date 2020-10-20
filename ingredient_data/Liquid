@@ -1,0 +1,5 @@
+name: Liquid
+abstract: True
+inherit: Thing
+
+cook_flame: delete
