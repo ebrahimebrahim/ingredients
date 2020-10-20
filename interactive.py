@@ -204,7 +204,11 @@ class IngredientsCmd(cmd.Cmd):
     return stop
 
   def complete_get(self, text, line, begidx, endidx):
-    return [ing.name for ing in ingredients]
+    split_line = line.split()
+    partial_arg = ''
+    if len(split_line)==2:
+      partial_arg = split_line[1]
+    return [ing.name for ing in ingredients if partial_arg in ing.name]
 
 
     # ----- record and playback ----- (Copied from the example in the docs)
