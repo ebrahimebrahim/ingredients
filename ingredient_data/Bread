@@ -1,0 +1,7 @@
+name: Bread
+abstract: False
+inherit: Dry
+
+cook_bake: gain_mod burnt
+cook_boil: gain_mod soggy
+cook_flame: gain_mod burnt

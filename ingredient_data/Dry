@@ -3,4 +3,4 @@ abstract: True
 inherit: Solid
 
 
-mush: gain_mod powdered;
+mush: gain_mod powdered

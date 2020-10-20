@@ -1,0 +1,8 @@
+name: Dough
+abstract: False
+inherit: Solid
+
+
+chop: nothing
+
+mush: nothing

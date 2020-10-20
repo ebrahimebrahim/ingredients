@@ -1,0 +1,14 @@
+name: Ash
+abstract: False
+inherit: None
+
+
+chop: nothing
+
+mush: nothing
+strain: separate_out
+
+cook_flame: delete
+cook_fry: nothing
+cook_boil: nothing
+cook_bake: nothing
