@@ -32,6 +32,7 @@ class Food:
     self.mixture = mixture
     self.in_container = in_container
     self.marked_for_deletion = False
+    self.marked_for_separating_out = []
 
   def reduce(self):
     self.mixture = rs.reduce_mixture(self.mixture)
@@ -86,6 +87,12 @@ class Food:
               print("Warning: a yield action from {} has produced an ingredient {} that does not exist.\
                 This is probaly bad.".format(ing_name,new_ing_name))
             self.mixture.components.append(Component(new_component_tokens))
+        elif args[0]=='separate_out':
+          if len(args)!=1:
+            print("Invalid arguments in action:",action)
+          else:
+            self.remove_component(component)
+            self.marked_for_separating_out.append(component)
         else:
           print("Didn't know what to do with this action: "+action)
     # reduce the mixture using reduction system made out of parsed reductions file
@@ -125,10 +132,15 @@ class IngredientsCmd(cmd.Cmd):
     if not self.validate_foods_index(arg): return
     self.foods[int(arg)].apply_action_from_attribute('chop')
 
-  def do_press(self, arg):
-    'Press the food of the indicated index in the list : press 3'
+  def do_mush(self, arg):
+    'Mash, blend, grind, or press the food of the indicated index in the list : mush 3'
     if not self.validate_foods_index(arg): return
-    self.foods[int(arg)].apply_action_from_attribute('press')
+    self.foods[int(arg)].apply_action_from_attribute('mush')
+
+  def do_strain(self, arg):
+    'Strain the food of the indicated index in the list : strain 3'
+    if not self.validate_foods_index(arg): return
+    self.foods[int(arg)].apply_action_from_attribute('strain')
 
   def do_cook(self, arg):
     'Cook the food of the indicated index in the list : cook 2'
@@ -200,7 +212,12 @@ class IngredientsCmd(cmd.Cmd):
       for food in self.foods:
         if food.marked_for_deletion:
           self.foods.remove(food)
+        if food.marked_for_separating_out:
+          self.foods.append(Food(Mixture(food.marked_for_separating_out)))
+          food.marked_for_separating_out = []
+
       self.report_foods()
+
     return stop
 
   def complete_get(self, text, line, begidx, endidx):
