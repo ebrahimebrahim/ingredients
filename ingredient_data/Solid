@@ -4,6 +4,10 @@ inherit: Thing
 
 
 chop: gain_mod chopped
+
+mush: gain_mod mashed
+strain: nothing
+
 cook_flame: gain_mod charred
 cook_fry: gain_mod fried
 cook_boil: gain_mod boiled
