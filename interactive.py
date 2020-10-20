@@ -225,6 +225,8 @@ class IngredientsCmd(cmd.Cmd):
     partial_arg = ''
     if len(split_line)==2:
       partial_arg = split_line[1]
+    if len(partial_arg)>0:
+      partial_arg = partial_arg[0].upper() + partial_arg[1:]
     return [ing.name for ing in ingredients if partial_arg in ing.name]
 
 
