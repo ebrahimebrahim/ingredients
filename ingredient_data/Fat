@@ -1,6 +1,6 @@
 name: Fat
 abstract: True
-inherit: Thing
+inherit: None
 
 
 cook_flame: gain_mod on_fire

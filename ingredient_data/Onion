@@ -1,0 +1,3 @@
+name: Onion
+abstract: False
+inherit: Solid

@@ -1,6 +1,6 @@
 name: Liquid
 abstract: True
-inherit: Thing
+inherit: None
 
 
 chop: nothing

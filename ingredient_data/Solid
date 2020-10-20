@@ -1,6 +1,6 @@
 name: Solid
 abstract: True
-inherit: Thing
+inherit: None
 
 
 chop: gain_mod chopped
