@@ -1,0 +1,3 @@
+name: LambFat
+abstract: False
+inherit: Solid, Fat
