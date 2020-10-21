@@ -1,5 +1,5 @@
 chopped + chopped = minced
-chopped + minced = finely_minced
+chopped + minced = minced
 
 on_fire + on_fire = on_fire
 
@@ -44,5 +44,13 @@ m1 fried m2 Dough -> m1 m2 Bread
 
 fine + fine = fine
 (m1 Salt) + (m2 i1:Water) -> (m2 salty i1)
+(m1 Salt) + (m2 i1:Solid) -> (m2 salty i1)
 salty+salty=very_salty
 salty+very_salty=very_salty
+
+m1 boiled m2 Rice + m3 i1:Water -> m1 m2 m3 CookedRice
+
+# Wish I could say that salty should be in m1,m2, or m3 without writing a million rules:
+m1 fried m2 chopped m3 Potato -> m1 m2 m3 FrenchFries
+m1 FrenchFries + m2 i1:Fat -> m1 m2 i1 FrenchFries
+m1 fried m2 minced m3 Potato -> m1 m2 m3 HashBrowns

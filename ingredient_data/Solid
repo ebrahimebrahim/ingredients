@@ -12,3 +12,20 @@ cook_flame: gain_mod charred
 cook_fry: gain_mod fried
 cook_boil: gain_mod boiled
 cook_bake: gain_mod baked
+
+---
+
+name: CookedSolid
+abstract: True
+inherit: Solid
+
+
+chop: gain_mod chopped
+
+mush: gain_mod mashed
+strain: nothing
+
+cook_flame: gain_mod burnt
+cook_fry: gain_mod burnt
+cook_boil: gain_mod boiled
+cook_bake: gain_mod burnt

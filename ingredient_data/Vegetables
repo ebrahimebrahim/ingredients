@@ -13,3 +13,39 @@ inherit: Juicy
 name: Potato
 abstract: False
 inherit: Solid
+
+---
+
+name: FrenchFries
+abstract: False
+inherit: Solid
+
+---
+
+name: HashBrowns
+abstract: False
+inherit: Solid
+
+---
+
+name: Cauliflower
+abstract: False
+inherit: Solid
+
+---
+
+name: Broccoli
+abstract: False
+inherit: Solid
+
+---
+
+name: Carrot
+abstract: False
+inherit: Solid
+
+---
+
+name: Mushroom
+abstract: False
+inherit: Solid
