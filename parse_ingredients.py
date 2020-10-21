@@ -29,6 +29,10 @@ def parse(ingredients_dir):
       line = line.strip() # remove whitespace
       line = line.split('#')[0] # remove comments
       if not line: continue # skip blanks
+      if line=="---":
+        ingredient_dicts.append(ingredient_dict)
+        ingredient_dict = {"filepath":path}
+        continue
       try:
         k,v = line.split(':')
       except:
@@ -50,9 +54,10 @@ def parse(ingredients_dir):
   # Further validation and warnings
   for ing in ingredient_dicts:
     if ing["abstract"] not in ["True", "False"]:
-      raise Exception("Ingredient in {} has invalid value for attribute 'abstract'".format(ing['filepath']))
-    if ing["name"] != os.path.basename(ing['filepath']):
-      print("Warning: Ingredient in {} has name '{}' that does not match the filename. Was this intentional?".format(ing['filepath'],ing['name']), file=sys.stderr)
+      raise Exception("Ingredient {} in {} has invalid value for attribute 'abstract'".format(ing['name'],ing['filepath']))
+    if len([i for i in ingredient_dicts if i['filepath']==ing['filepath']])==1:
+      if ing["name"] != os.path.basename(ing['filepath']):
+        print("Warning: Ingredient in {} has name '{}' that does not match the filename. Was this intentional?".format(ing['filepath'],ing['name']), file=sys.stderr)
 
 
   # Dict for to lookup ingredients by ingredient name

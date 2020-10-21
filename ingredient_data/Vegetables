@@ -1,0 +1,9 @@
+name: Onion
+abstract: False
+inherit: Solid
+
+---
+
+name: Tomato
+abstract: False
+inherit: Juicy
