@@ -33,14 +33,11 @@ chopped + mashed = mashed
 powdered + powdered = powdered
 powdered + soggy = mashed
 
-
 (m1 powdered m2 i1:Grain) + (m3 Water) -> (m1 m2 m3 i1 Dough)
 (m1 mashed m2 i1) + (m3 Dough) -> (m1 m2 i1 m3 Dough)
 m1 baked m2 Dough -> m1 m2 Bread
 m1 fried m2 Dough -> m1 m2 Bread
 
-Tomato + Tomato = Tomato # Why  does this take two steps to reduce?
-
-(m1 Water) + (m2 Water) -> (m1 m2 Water)
+(m1 i1:Liquid) + (m2 i1:Liquid) -> (m1 m2 i1)
 
 (m1 on_fire m2 i1) + (m3 i2:Water) -> (m1 m2 i1) + (m3 i2:Water)

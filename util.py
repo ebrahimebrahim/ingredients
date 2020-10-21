@@ -265,28 +265,49 @@ def token_type(token):
   return "constant"
 
 
+def apply_till_no_change(f,x,max_iterations):
+  """Apply f repeatedly to x and return the result if it converges. Raise Exception otherwise."""
+  old_x=copy.deepcopy(x)
+  for _ in range(max_iterations):
+    new_x = f(old_x)
+    if new_x == old_x:
+      return new_x
+    old_x = new_x
+  raise Exception("Timed out while reducing '{}'. Was stuck at '{}'.\n\
+    \t Is there a cycle in your reduction system?".format(x,new_x))
+
+
+def apply_each_rule_till_no_change(rules, x, max_iterations):
+  """For each rule in rules, apply it to x until convergence.
+     Here a rule just has to have an apply method,
+     so it could be a component rule (in which case x must be a Component)
+     or a mixture rule (in which case x must be a Mixture)"""
+  y = copy.deepcopy(x)
+  for rule in rules:
+    y = apply_till_no_change(rule.apply,y,max_iterations)
+  return y
+
+
+
 class ReductionSystem:
   """Initialize with a list of ReductionRuleComponent and a list of ReductionRuleMixture
   """
   def __init__(self, component_rules, mixture_rules):
     self.component_rules = component_rules
     self.mixture_rules = mixture_rules
-    self.max_iterations = 1000
+    self.max_iterations = 500
+
 
   def reduce_component(self, component):
     """ Repeatedly apply the component rules until component is fully reduced
         Return reduced form.
         component is a Component
     """
-    result = component
-    for i in range(self.max_iterations):
-      old_result = result
-      for rule in self.component_rules:
-        result = rule.apply(result)
-      if old_result == result:
-        return result
-    raise Exception("Timed out while reducing the component '{}'. Was stuck at '{}'.\n\
-      \t Is there a cycle in your reduction system?".format(component,result))
+    return apply_till_no_change(
+      lambda c : apply_each_rule_till_no_change(self.component_rules,c,self.max_iterations),
+      component,
+      self.max_iterations
+    )
 
   def reduce_mixture(self, mixture):
     """ First reduce all components of the mixture.
@@ -294,13 +315,12 @@ class ReductionSystem:
         Return reduced form.
         Here component is assumed to be a Mixture.
     """
-    result = Mixture([self.reduce_component(c) for c in mixture.components])
-
-    for i in range(self.max_iterations):
-      old_result = Mixture(result)
-      for rule in self.mixture_rules:
-        result = rule.apply(result)
-      if old_result == result:
-        return result
-    raise Exception("Timed out while reducing the mixture '{}'. Was stuck at '{}'.\n\
-      \t Is there a cycle in your reduction system?".format(mixture,result))
+    return apply_till_no_change(
+      lambda m : apply_till_no_change(
+        lambda m2 : apply_each_rule_till_no_change(self.mixture_rules,m2,self.max_iterations),
+         Mixture([self.reduce_component(c) for c in m.components]),
+        self.max_iterations
+      ),
+      mixture,
+      self.max_iterations
+    )

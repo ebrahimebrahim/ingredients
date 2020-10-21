@@ -231,7 +231,7 @@ class TestReductionSystem(unittest.TestCase):
     crules += parse_reductions.parse_component_reduction_rule("happy + mad = manic")
     rs = ReductionSystem(crules,[])
     reduced = rs.reduce_component(Component("happy happy happy sad sad mad Person"))
-    self.assertEqual("neutral manic Person",str(reduced))
+    self.assertEqual("manic neutral Person",str(reduced))
 
   def test_mixture_reduction(self):
     mrules = [parse_reductions.parse_mixture_reduction_rule("(m1 powdered m2 i1:Grain) + (m3 Water) -> (m1 m2 m3 i1 Dough)")]
