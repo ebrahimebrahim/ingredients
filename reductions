@@ -20,10 +20,14 @@ chopped mashed i1 -> mashed i1
 
 powdered soggy i1 -> mashed i1
 
-(o1 powdered i1:Grain) + (o2 Water) -> (o1 o2 i1 Dough)
-(o1 mashed i1) + (o2 Dough) -> (o1 o2 i1 Dough)
+(o1:Solid,Liquid powdered i1:Grain) + (o2 i2:Water) -> (o1 o2 i1 Dough)
+(o1:Solid,Liquid mashed i1) + (o2 Dough) -> (o1 o2 i1 Dough)
+(o1 Dough) + (o2 Water) -> (o1 o2 Batter)
 baked Dough -> Bread
 fried Dough -> Bread
+fried Batter -> Pancake
+baked Batter -> Cake
+boiled Batter -> Slurry
 
 (o1 i1:Liquid) + (o2 i1:Liquid) -> (o1 o2 i1)
 

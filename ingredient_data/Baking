@@ -1,0 +1,48 @@
+name: Dough
+abstract: False
+inherit: Solid
+
+
+chop: nothing
+
+mush: nothing
+
+---
+
+name: Batter
+abstract: False
+inherit: Liquid
+
+cook_bake: gain_mod baked
+cook_fry: gain_mod fried
+cook_boil: gain_mod boiled
+
+---
+
+
+name: Slurry
+abstract: False
+inherit: Batter
+
+
+---
+
+
+name: Bread
+abstract: False
+inherit: CookedSolid
+
+
+---
+
+name: Pancake
+abstract: False
+inherit: CookedSolid
+
+
+---
+
+
+name: Cake
+abstract: False
+inherit: CookedSolid

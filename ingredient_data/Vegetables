@@ -18,7 +18,7 @@ inherit: Solid
 
 name: FrenchFries
 abstract: False
-inherit: Solid
+inherit: CookedSolid
 
 ---
 
