@@ -1,3 +1,21 @@
 name: Grain
 abstract: True
 inherit: Dry
+
+---
+
+name: Oat
+abstract: False
+inherit: Grain
+
+---
+
+name: Wheat
+abstract: False
+inherit: Grain
+
+---
+
+name: Rice
+abstract: False
+inherit: Grain

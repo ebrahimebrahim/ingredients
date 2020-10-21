@@ -7,3 +7,9 @@ inherit: Solid
 name: Tomato
 abstract: False
 inherit: Juicy
+
+---
+
+name: Potato
+abstract: False
+inherit: Solid

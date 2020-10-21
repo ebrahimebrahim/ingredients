@@ -1,0 +1,9 @@
+name: LambMeat
+abstract: False
+inherit: Solid
+
+---
+
+name: LambFat
+abstract: False
+inherit: Solid, Fat
