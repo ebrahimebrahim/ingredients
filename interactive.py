@@ -164,8 +164,12 @@ class IngredientsCmd(cmd.Cmd):
   def do_get(self, arg):
     'Grab an ingredient : get Onion'
     if arg not in ingredients_byname:
-      print("Not an ingredient. Possible ingredients: "+', '.join(ing.name for ing in ingredients))
-      return
+      possible_matches = [k for k in ingredients_byname.keys() if k.lower()==arg.lower()]
+      if possible_matches:
+        arg = possible_matches[0]
+      else:
+        print("Not an ingredient. Possible ingredients: "+', '.join(ing.name for ing in ingredients))
+        return
     self.foods.append(Food(Mixture(arg)))
 
   def do_dump(self, arg):
