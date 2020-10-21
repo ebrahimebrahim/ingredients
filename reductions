@@ -1,5 +1,5 @@
 double_collapse: on_fire, boiled, soggy, mashed, powdered, fine
-m1:double_collapse m1 i1 -> i1
+m1:double_collapse m1 i1 -> m1 i1
 
 chopped chopped i1 -> minced i1
 chopped minced i1 -> minced i1
@@ -15,8 +15,8 @@ m1:can_burn   m2:can_burn   i1 ->   burnt  i1
 cooked_nonboil: fried, charred, baked
 & m1:cooked_nonboil soggy i1 -> m1 i1
 
-mashed soggy i1 -> mashed i1
-chopped mashed i1 -> mashed i1
+mashed_overtakes: soggy, chopped, minced
+mashed m1:mashed_overtakes i1 -> mashed i1
 
 powdered soggy i1 -> mashed i1
 
@@ -43,3 +43,8 @@ o1 boiled Rice + o2 i1:Water -> o1 o2 CookedRice
 & fried chopped Potato -> FrenchFries 
 o1 FrenchFries + o2 i1:Fat -> o1 o2 i1 FrenchFries
 & fried minced Potato -> HashBrowns
+
+boiled m1:Solid i1:Water -> m1 i1 Soup
+o1 mashed i1:Solid + o2 boiled i2:Water ->  o1 o2 i1 i2 Soup
+boiled Water -> Water # For some reason this prevents the Soup from ever forming!
+boiled Soup -> Soup

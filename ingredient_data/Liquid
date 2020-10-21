@@ -12,3 +12,24 @@ cook_flame: delete
 cook_fry: nothing
 cook_boil: nothing
 cook_bake: nothing
+
+---
+
+name: Water
+abstract: False
+inherit: Liquid
+
+cook_boil: gain_mod boiled # for possibly becoming soup
+
+---
+
+name: Soup
+abstract: False
+inherit: Water
+
+---
+
+name: Milk
+abstract: False
+inherit: Water
+
