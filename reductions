@@ -25,6 +25,7 @@ boil +> soggy = soggy
 fried +> soggy = fried
 baked +> soggy = baked
 charred +> soggy = charred
+soggy + soggy = soggy
 
 mashed + mashed = mashed
 mashed + soggy = mashed

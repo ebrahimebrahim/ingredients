@@ -24,7 +24,7 @@ inherit: Solid
 
 name: HashBrowns
 abstract: False
-inherit: Solid
+inherit: CookedSolid
 
 ---
 
