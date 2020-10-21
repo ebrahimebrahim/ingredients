@@ -1,9 +1,100 @@
 import unittest
 import parse_reductions
 from util import Ingredient,ReductionRuleMixture,ReductionRuleComponent,token_type,match_pattern,Mixture,Component,ReductionSystem
+import pattern_match
 
 
-class TestMatchPattern(unittest.TestCase):
+class TestComponentRuleLHS(unittest.TestCase):
+
+  def test_parsing(self):
+    lhs_strings = [
+      "Onion",
+      "salty Onion",
+      "& salty Onion",
+      "&& salty Onion",
+      "o1 && salty Onion",
+      "o1 o2 o3 && salty Onion",
+      "o1:a,b o2:a,b,c o3 o4:a & salty Onion"
+      "o1 salty Onion",
+      "o1 o2 o3 salty Onion",
+      "o1:a,b o2:a,b,c o3 o4:a salty Onion"
+    ]
+    for lhs_string in lhs_strings:
+      p = pattern_match.ComponentRuleLHS(lhs_string)
+      self.assertEqual(lhs_string,str(p))
+
+
+class TestTypeChecker(unittest.TestCase):
+
+  def test_typeinfo(self):
+    type_checker = pattern_match.TrivialTypeChecker()
+    examples_not_last = {
+      "i1" : ('uqvar','ingmod'),
+      "i349" : ('uqvar','ingmod'),
+      "i24:AnIngredient" : ('qvar','ingmod'),
+      "m24:salty" : ('qvar','mod'),
+      "m24" : ('uqvar','mod'),
+      "AnIngredient" : ('const','ingmod'),
+      "salty" : ('const','mod'),
+    }
+    for token in examples_not_last:
+      self.assertEqual(examples_not_last[token] , type_checker.type_info(token))
+
+    examples_last = {
+      "i1" : ('uqvar','ing'),
+      "i349" : ('uqvar','ing'),
+      "i24:AnIngredient" : ('qvar','ing'),
+      "AnIngredient" : ('const','ing'),
+      "salty" : ('const','mod'),
+    }
+    for token in examples_last:
+      self.assertEqual(examples_last[token] , type_checker.type_info(token,last=True))
+
+
+class TestPatternMatch(unittest.TestCase):
+
+  def test_match_component_pattern(self):
+    type_checker = pattern_match.TrivialTypeChecker()
+
+    # pattern, target, expected match
+    examples = [
+      ("m1 i1", "salty AnIngredient",
+          {'m1': 'salty', 'i1': 'AnIngredient', 'o0': []} ),
+      ("m1 i1:AnIngredient_tag", "salty AnIngredient",
+          {'m1': 'salty', 'i1': 'AnIngredient', 'o0': []} ),
+      ("m1:salty_tag i1", "soggy salty crappy AnIngredient",
+          {'m1': 'salty', 'i1': 'AnIngredient', 'o0': ['soggy','crappy']} ),
+      ("o3 m1:salty_tag i1", "soggy salty crappy AnIngredient",
+          {'m1': 'salty', 'i1': 'AnIngredient', 'o3': ['soggy','crappy']} ),
+      ("& m1:salty_tag i1", "soggy salty crappy AnIngredient",
+          {'m1': 'salty', 'i1': 'AnIngredient', 'o0': ['soggy','crappy']} ),
+      ("&& m1:salty_tag i1", "soggy salty crappy AnIngredient",
+          None ),
+      ("&& m1 i1", "soggy salty crappy AnIngredient",
+          {'m1':'crappy' , 'i1': 'AnIngredient', 'o0': ['soggy','salty']} ),
+      ("o5:salty_tag && m1 i1", "soggy salty crappy AnIngredient",
+          {'m1':'crappy' , 'i1': 'AnIngredient', 'o5': ['salty']} ),
+      ("o5:salty_tag && m1 m1 i1", "soggy salty crappy AnIngredient",
+          None ),
+      ("o5 && m1 m1 i1", "soggy salty salty AnIngredient",
+          {'m1':'salty' , 'i1': 'AnIngredient', 'o5': ['soggy']} ),
+      ("o5 && m1 m2 m1 i1", "soggy salty salty AnIngredient",
+          None ),
+      ("o5 m1 m2 m1 i1", "soggy salty salty AnIngredient",
+          {'m1':'salty' , 'm2':'soggy', 'i1': 'AnIngredient', 'o5': []} ),
+      ("o5 & soggy salty i1", "soggy salty salty AnIngredient",
+          {'i1': 'AnIngredient', 'o5': ['salty']} ),
+      ("o5 & salty soggy i1", "soggy salty salty AnIngredient",
+          None ),
+    ]
+    for pattern, target, expected in examples:
+      match = pattern_match.match_component_pattern(
+        pattern_match.ComponentRuleLHS(pattern),
+        pattern_match.Component(target),
+        type_checker
+      )
+      self.assertEqual(expected,match)
+
 
   def setUp(self):
     self.trivial_check = lambda child,parent : True
