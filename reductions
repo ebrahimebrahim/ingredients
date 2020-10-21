@@ -41,3 +41,8 @@ m1 fried m2 Dough -> m1 m2 Bread
 (m1 i1:Liquid) + (m2 i1:Liquid) -> (m1 m2 i1)
 
 (m1 on_fire m2 i1) + (m3 i2:Water) -> (m1 m2 i1) + (m3 i2:Water)
+
+fine + fine = fine
+(m1 Salt) + (m2 i1:Water) -> (m2 salty i1)
+salty+salty=very_salty
+salty+very_salty=very_salty

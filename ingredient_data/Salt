@@ -1,0 +1,13 @@
+name: Salt
+abstract: False
+inherit: None
+
+
+chop: nothing
+mush: gain_mod fine
+strain: nothing
+
+cook_flame: nothing
+cook_fry: nothing
+cook_boil: nothing
+cook_bake: nothing
