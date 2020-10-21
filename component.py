@@ -1,5 +1,31 @@
-from util import Component
 import copy
+
+
+class Component:
+  """ Wraps a list of token strings.
+      The initializer can be
+      - a string representation of a token, which is space separated
+      - a list of tokens
+      - another Component (in which case a copy is created)
+  """
+  def __init__(self,init=None):
+    if init is None:
+      self.tokens = []
+    elif isinstance(init,str):
+      self.tokens = [t.strip() for t in init.split()]
+    elif isinstance(init,list):
+      self.tokens = init
+    elif isinstance(init,Component):
+      self.tokens = copy.deepcopy(init.tokens)
+    else:
+      raise Exception("Cannot initialize a Component with '{}', which is of type '{}'".format(init,type(init)))
+
+  def __str__(self):
+    return ' '.join(self.tokens)
+
+  def __eq__(self,other):
+    return self.tokens==other.tokens
+
 
 class Token:
   'Represents a token. See TypeChecker.type_info for description of type_info tuple.'
@@ -31,12 +57,13 @@ class TypeChecker:
     The tuple has 2 components:
     - varness, which is "const" or "uqvar" or "qvar"
       (constant, unqualified variable, or qualified variable)
-    - category, which is "mod", "ingmod", or "ing"
-      (modifier that isn't an ingedient, ingredient being used as a modifier, or ingredient as the base)
+    - category, which is "mod", "ingmod", "ing", or "o"
+      (modifier that isn't an ingedient, ingredient being used as a modifier, ingredient as the base,
+      or a variable standing for a selection from the list of tokens not involved in a match)
     """
     if not token_str:
       raise Exception("Token type checker has been given an empty or null token.")
-    elif token_str[0] == 'm':
+    if token_str[0] == 'm':
       if token_str[1:].isnumeric():
         if last : raise Exception("Missing ingredient base at end of pattern")
         return "uqvar", "mod"
@@ -48,7 +75,7 @@ class TypeChecker:
         except:
           raise Exception("Invalid token '{}'".format(token_str))
         return "qvar", "mod"
-    elif token_str[0] == 'i':
+    if token_str[0] == 'i':
       if token_str[1:].isnumeric():
         return "uqvar", ("ing" if last else "ingmod")
       elif ':' in token_str:
@@ -58,10 +85,19 @@ class TypeChecker:
         except:
           raise Exception("Invalid token '{}'".format(token_str))
         return "qvar", ("ing" if last else "ingmod")
-    elif self.is_ingredient(token_str):
+    if token_str[0] == 'o':
+      if token_str[1:].isnumeric():
+        return "uqvar",'o'
+      elif ':' in token_str:
+        try:
+          a,b=token_str.split(':')
+          assert(a[1:].isnumeric())
+        except:
+          raise Exception("Invalid token '{}'".format(token_str))
+        return "qvar", 'o'
+    if self.is_ingredient(token_str):
       return "const", ("ing" if last else "ingmod")
-    else:
-      return "const", "mod"
+    return "const", "mod"
 
 
   def tags_of_const(self, const_token):
@@ -72,6 +108,14 @@ class TypeChecker:
       then this could be the list of all its ancestor ingredients
     """
     raise NotImplementedError
+
+  def const_has_tag(self, const_token, tag):
+    'Return whether the token has the tag'
+    return tag in self.tags_of_const(const_token)
+
+  def parse_token(self, token_str):
+    'Convert the given token string into a Token'
+    return Token(token_str, self.type_info(token_str))
 
   def const_satisfies_qualifiers(self,const_token,qualifiers_list):
     'Return whether any of the tags that const_token has are in qualifiers_list'
@@ -91,7 +135,7 @@ class TrivialTypeChecker(TypeChecker):
     return [const_token.name, const_token.name+"_tag"]
 
   def is_ingredient(self,name):
-    return name=="AnIngredient"
+    return name in ["AnIngredient", "AnotherIngredient"]
 
 
 class ComponentRuleLHS:
@@ -138,6 +182,9 @@ class ComponentRuleLHS:
     if self.strictness!='': out_parts.append(self.strictness)
     out_parts.append(str(self.component))
     return ' '.join(out_parts)
+
+  def __eq__(self,other):
+    return self.component==other.component and self.strictness==other.strictness and self.o_dict==other.o_dict
 
 
 
@@ -214,8 +261,65 @@ def match_component_pattern_recurse(pattern_tokens,target_tokens,type_checker,or
 
 def add_to_o_assignment(match_dict, const_tokens, o_dict, type_checker):
   if not o_dict:
-    match_dict['o0'] = match_dict.get('o0',[]) + [tt.name for tt in const_tokens]
+    match_dict['o_auto'] = match_dict.get('o_auto',[]) + [tt.name for tt in const_tokens]
   else:
     for ovar,ovar_qualifiers in o_dict.items():
       match_dict[ovar] = match_dict.get(ovar,[]) +\
         [tt.name for tt in const_tokens if ovar_qualifiers is None or type_checker.const_satisfies_qualifiers(tt,ovar_qualifiers)]
+
+
+class ReductionRuleComponent:
+  """ A ReductionRuleComponent represents a rule that converts things matching the lhs pattern to the form described by the rhs
+      The rhs_str is a string representing a Component and the lhs_str is a string representing a ComponentRuleLHS.
+      type_checker is a pattern_match.TypeChecker subclass
+  """
+  def __init__(self, lhs_str, rhs_str, type_checker=TrivialTypeChecker()):
+    self.lhs = ComponentRuleLHS(lhs_str)
+    self.rhs = Component(rhs_str)
+    self.type_checker = type_checker
+
+  def __str__(self):
+    return str(self.lhs) + " -> " + str(self.rhs)
+
+  def match_lhs(self,component):
+    """ Match the pattern of the lhs to the given Component, and return
+    a dict representing the match. Return None if there is no match.
+    It makes sense for the tokens of Component to all be constant type.
+    Returns the match, which is a dict whose keys are the variables in the lhs,
+    and whose values are tokens or lists of tokens selected from component.
+    """
+    return match_component_pattern(self.lhs,component,self.type_checker)
+
+  def apply(self,component):
+    """ Apply the reduction rule to the given Component
+        Returns a Component, the result of applying the rule to component
+    """
+    match = self.match_lhs(component)
+    if match is None:
+      return component # No match, component is already reduced wrt this rule
+
+    return apply_substitution_to_component(self.rhs, match, self.type_checker)
+
+
+def apply_substitution_to_component(component, subst_dict, type_checker):
+  """ Given a Component and given a subst_dict mapping variables
+  in |tokens| to constants, return the component that results from carrying
+  out all the substitutions. If subst_dict has an 'o_auto' then put that in no matter what."""
+
+  parsed_tokens = []
+  for i,token_str in enumerate(component.tokens):
+    parsed_tokens.append(
+      Token(token_str, type_checker.type_info(token_str, last=(i==len(component.tokens)-1) ) )
+    )
+
+  result_tokens = []
+  if 'o_auto' in subst_dict:
+    result_tokens += subst_dict['o_auto']
+  for token in parsed_tokens:
+    if token.category=='o':
+      result_tokens += subst_dict[token.name]
+    elif token.varness in ['uqvar','qvar']:
+      result_tokens.append(subst_dict[token.name])
+    elif token.varness=="const":
+      result_tokens.append(token.name)
+  return Component(result_tokens)

@@ -1,57 +1,40 @@
-chopped + chopped = minced
-chopped + minced = minced
+double_collapse: on_fire, boiled, soggy, mashed, powdered, fine
+m1:double_collapse m1 i1 -> i1
 
-on_fire + on_fire = on_fire
+chopped chopped i1 -> minced i1
+chopped minced i1 -> minced i1
 
-boiled + boiled = boiled
-fried + fried = burnt
-fried + extra_fried = burnt
-charred + charred = burnt
-baked + baked = burnt
+cooked_nonboil: fried, charred, baked
+m1:cooked_nonboil   m2:cooked_nonboil   i1 ->   burnt  i1
 
-baked + charred = burnt
-fried + baked = burnt
-fried + charred = burnt
+o1 m1:cooked_nonboil burnt i1 -> Ash
 
-fried + burnt = become_ash
-baked + burnt = become_ash
-charred + burnt = become_ash
-burnt + burnt = become_ash
-m1 become_ash m2 i1 -> Ash
+& fried boiled i1 -> fried i1
+& boiled fried i1 -> soggy i1
+& boiled soggy i1 -> soggy i1
+& m1:cooked_nonboil soggy i1 -> m1 i1
 
-fried +> boiled = fried
-boiled +> fried = soggy
-boil +> soggy = soggy
-fried +> soggy = fried
-baked +> soggy = baked
-charred +> soggy = charred
-soggy + soggy = soggy
+mashed soggy i1 -> mashed i1
+chopped mashed i1 -> mashed i1
 
-mashed + mashed = mashed
-mashed + soggy = mashed
-chopped + mashed = mashed
+powdered soggy i1 -> mashed i1
 
-powdered + powdered = powdered
-powdered + soggy = mashed
+(o1 powdered i1:Grain) + (o2 Water) -> (o1 o2 i1 Dough)
+(o1 mashed i1) + (o2 Dough) -> (o1 o2 i1 Dough)
+baked Dough -> Bread
+fried Dough -> Bread
 
-(m1 powdered m2 i1:Grain) + (m3 Water) -> (m1 m2 m3 i1 Dough)
-(m1 mashed m2 i1) + (m3 Dough) -> (m1 m2 i1 m3 Dough)
-m1 baked m2 Dough -> m1 m2 Bread
-m1 fried m2 Dough -> m1 m2 Bread
+(o1 i1:Liquid) + (o2 i1:Liquid) -> (o1 o2 i1)
 
-(m1 i1:Liquid) + (m2 i1:Liquid) -> (m1 m2 i1)
+(o1 on_fire i1) + (o2 i2:Water) -> (o1 i1) + (o2 i2:Water)
 
-(m1 on_fire m2 i1) + (m3 i2:Water) -> (m1 m2 i1) + (m3 i2:Water)
+(o1 Salt) + (o2 i1:Water) -> (o2 salty i1)
+(o1 Salt) + (o2 i1:Solid) -> (o2 salty i1)
+salty salty i1 -> very_salty i1
+salty very_salty i1 -> very_salty i1
 
-fine + fine = fine
-(m1 Salt) + (m2 i1:Water) -> (m2 salty i1)
-(m1 Salt) + (m2 i1:Solid) -> (m2 salty i1)
-salty+salty=very_salty
-salty+very_salty=very_salty
+o1 boiled Rice + o2 i1:Water -> o1 o2 CookedRice
 
-m1 boiled m2 Rice + m3 i1:Water -> m1 m2 m3 CookedRice
-
-# Wish I could say that salty should be in m1,m2, or m3 without writing a million rules:
-m1 fried m2 chopped m3 Potato -> m1 m2 m3 FrenchFries
-m1 FrenchFries + m2 i1:Fat -> m1 m2 i1 FrenchFries
-m1 fried m2 minced m3 Potato -> m1 m2 m3 HashBrowns
+& fried chopped Potato -> FrenchFries 
+o1 FrenchFries + o2 i1:Fat -> o1 o2 i1 FrenchFries
+& fried minced Potato -> HashBrowns

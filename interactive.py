@@ -1,5 +1,23 @@
 import cmd, parse_reductions, parse_ingredients
 from util import *
+from mixture import *
+from component import *
+
+
+# Define the type checker
+class InteractiveTypeChecker(TypeChecker):
+  def __init__(self, ingredients_byname,modifier_tags):
+    self.ingredients_byname = ingredients_byname
+    self.modifier_tags = modifier_tags
+
+  def tags_of_const(self, const_token):
+    if const_token.category in ['ing','ingmod']:
+      return [const_token.name] + ingredients_byname[const_token.name].inherited_from
+    if const_token.category == 'mod':
+      return modifier_tags.get(const_token.name,[])
+  def is_ingredient(self,name):
+    return name in ingredients_byname.keys()
+
 
 
 # Load ingredients
@@ -8,23 +26,18 @@ ingredients_byname = {}
 for ing in ingredients:
   ingredients_byname[ing.name] = ing
 
-
-
 # Load reduction rules
-reduction_rules_component,reduction_rules_mixture = parse_reductions.parse(parse_reductions.REDUCTIONS_FILENAME)
+reduction_rules_component,reduction_rules_mixture,modifier_tags = parse_reductions.parse(parse_reductions.REDUCTIONS_FILENAME)
 
-def inheritance_check(child, parent):
-  if child not in ingredients_byname:
-    raise Exception("Encountered an ingredient that doesn't exist: "+child)
-  return parent==child or parent in ingredients_byname[child].inherited_from
+# Create type checker
+type_checker = InteractiveTypeChecker(ingredients_byname, modifier_tags)
 
-for rule in reduction_rules_component:
-  rule.inheritance_check = inheritance_check
-for rule in reduction_rules_mixture:
-  rule.inheritance_check = inheritance_check
+def token_str_has_tag(token_str, tag):
+  return type_checker.const_has_tag(type_checker.parse_token(token_str) , tag)
 
+# Create reduction system
 rs = ReductionSystem(reduction_rules_component,reduction_rules_mixture)
-
+rs.set_type_checker(type_checker)
 
 
 class Food:
@@ -51,8 +64,9 @@ class Food:
     for component in self.mixture.components[:]:
       # extract base ingredient from component, asserting that it's a const
       ing_name = component.tokens[-1]
-      if token_type(ing_name) != 'constant':
-        raise Exception("It does not make sense to apply actions component expressions with variables: "+str(component))
+      ing_varness, ing_category = type_checker.type_info(ing_name, last=True)
+      if ing_varness != 'const':
+        raise Exception("It does not make sense to apply action component expressions with variables: "+str(component))
       # lookup in parsed ingredients and find that ingredient's "attribute" attribute (e.g. "chop")
       if ing_name not in ingredients_byname:
         raise Exception("Ingredient does not exist: "+ing_name)
@@ -106,9 +120,9 @@ class Food:
     # They, or anything that inherits from them, will be treated specially for cook
     if not self.in_container:
       self.apply_action_from_attribute("cook_flame")
-    elif any(inheritance_check(component.tokens[-1],"Water") for component in self.mixture.components):
+    elif any(token_str_has_tag(component.tokens[-1],"Water") for component in self.mixture.components):
       self.apply_action_from_attribute("cook_boil")
-    elif any(inheritance_check(component.tokens[-1],"Fat") for component in self.mixture.components):
+    elif any(token_str_has_tag(component.tokens[-1],"Fat") for component in self.mixture.components):
       self.apply_action_from_attribute("cook_fry")
     else:
       self.apply_action_from_attribute("cook_bake")
