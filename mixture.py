@@ -63,7 +63,6 @@ class ReductionRuleMixture:
     """
     return match_mixture_pattern(self.lhs.components,mixture.components,self.type_checker)
 
-
   def apply(self,mixture):
     """ Apply the reduction rule to the given Mixture
         Return the resulting Mixture
@@ -74,6 +73,23 @@ class ReductionRuleMixture:
     match_dict, remaining_components = match_result
     return Mixture([apply_substitution_to_component(c, match_dict,self.type_checker) for c in self.rhs.components] + remaining_components)
 
+  def set_type_checker(self,type_checker):
+    self.type_checker = type_checker
+
+
+class ReductionRuleComponentAsMixture:
+  'Just wraps a ReductionRuleComponent, but has an apply method operates on mixtures'
+  def __init__(self, component_rule):
+    self.component_rule = component_rule
+
+  def apply(self,mixture):
+    return Mixture([self.component_rule.apply(c) for c in mixture.components])
+
+  def set_type_checker(self, type_checker):
+    self.component_rule.type_checker = type_checker
+
+  def __str__(self):
+    return str(self.component_rule)
 
 
 def match_mixture_pattern(pattern_components,components,type_checker,partial_match={}):

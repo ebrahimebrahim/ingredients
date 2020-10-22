@@ -47,9 +47,8 @@ def apply_each_rule_till_no_change(rules, x, max_iterations):
 class ReductionSystem:
   """Initialize with a list of ReductionRuleComponent and a list of ReductionRuleMixture
   """
-  def __init__(self, component_rules, mixture_rules):
-    self.component_rules = component_rules
-    self.mixture_rules = mixture_rules
+  def __init__(self, rules):
+    self.rules = rules
     self.max_iterations = 500
 
 
@@ -58,8 +57,10 @@ class ReductionSystem:
         Return reduced form.
         component is a Component
     """
+    component_rules_as_mixture = filter(lambda r : isinstance(r,ReductionRuleComponentAsMixture), self.rules)
+    component_rules = map(lambda r : r.component_rule, component_rules_as_mixture)
     return apply_till_no_change(
-      lambda c : apply_each_rule_till_no_change(self.component_rules,c,self.max_iterations),
+      lambda c : apply_each_rule_till_no_change(component_rules,c,self.max_iterations),
       component,
       self.max_iterations
     )
@@ -71,18 +72,12 @@ class ReductionSystem:
         Here component is assumed to be a Mixture.
     """
     return apply_till_no_change(
-      lambda m : apply_till_no_change(
-        lambda m2 : apply_each_rule_till_no_change(self.mixture_rules,m2,self.max_iterations),
-         Mixture([self.reduce_component(c) for c in m.components]),
-        self.max_iterations
-      ),
+      lambda m : apply_each_rule_till_no_change(self.rules,m,self.max_iterations),
       mixture,
       self.max_iterations
     )
 
   def set_type_checker(self,type_checker):
     'Set the type checker for all reduction rules'
-    for rule in self.component_rules:
-      rule.type_checker = type_checker
-    for rule in self.mixture_rules:
-      rule.type_checker = type_checker
+    for rule in self.rules:
+      rule.set_type_checker(type_checker)

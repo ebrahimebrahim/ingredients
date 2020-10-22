@@ -1,6 +1,6 @@
 import itertools
 from component import ReductionRuleComponent
-from mixture import ReductionRuleMixture
+from mixture import ReductionRuleMixture, ReductionRuleComponentAsMixture
 
 REDUCTIONS_FILENAME = "reductions"
 
@@ -42,13 +42,12 @@ def update_modifier_tags(modifier_tags,line):
 
 
 def parse(filepath):
-  """ Parse the reduction rules in filepath and return a three things:
-      the list of ReductionRuleComponent,
-      the list of ReductionRuleMixture,
+  """ Parse the reduction rules in filepath and return two things:
+      the list of reduction rules
+        (a variety of ReductionRuleMixture and ReductionRuleComponentAsMixture)
       and the dict of modifier tags
   """
-  reduction_rules_components = []
-  reduction_rules_mixtures = []
+  reduction_rules =[]
   modifier_tags = {}
 
 
@@ -58,27 +57,24 @@ def parse(filepath):
     line = line.split('#')[0] # remove comments
     if not line: continue # skip blanks
     if is_component_reduction_rule(line):
-      reduction_rules_components.append(parse_component_reduction_rule(line))
+      component_rule = parse_component_reduction_rule(line)
+      reduction_rules.append( ReductionRuleComponentAsMixture(component_rule) )
     elif is_mixture_reduction_rule(line):
-      reduction_rules_mixtures.append(parse_mixture_reduction_rule(line))
+      reduction_rules.append(parse_mixture_reduction_rule(line))
     elif is_modifier_tag_definition(line):
       update_modifier_tags(modifier_tags,line)
     else:
       raise Exception("Unable to parse line:",line)
   f.close()
 
-  return reduction_rules_components, reduction_rules_mixtures,modifier_tags
+  return reduction_rules, modifier_tags
 
 
 def main():
-  reduction_rules_components, reduction_rules_mixtures, modifier_tags = parse(REDUCTIONS_FILENAME)
+  reduction_rules, modifier_tags = parse(REDUCTIONS_FILENAME)
 
-  print("\nComponent rules:")
-  for r in reduction_rules_components:
-    print(r)
-
-  print("\nMixture rules:")
-  for r in reduction_rules_mixtures:
+  print("\nReduction rules:")
+  for r in reduction_rules:
     print(r)
 
   print("\nModifier tags:")

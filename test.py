@@ -156,7 +156,7 @@ class TestReductionSystem(unittest.TestCase):
     crules = [parse_reductions.parse_component_reduction_rule("happy sad i1 -> neutral i1")]
     crules.append( parse_reductions.parse_component_reduction_rule("neutral neutral i1 -> neutral i1") )
     crules.append( parse_reductions.parse_component_reduction_rule("happy mad i1 -> manic i1") )
-    rs = ReductionSystem(crules,[])
+    rs = ReductionSystem([ReductionRuleComponentAsMixture(c) for c in crules])
     reduced = rs.reduce_component(Component("happy happy happy sad sad mad AnIngredient"))
     self.assertEqual("neutral manic AnIngredient",str(reduced))
 
@@ -164,10 +164,10 @@ class TestReductionSystem(unittest.TestCase):
     mrules = [parse_reductions.parse_mixture_reduction_rule("(o1 powdered i1:Grain) + (o2 Water) -> (o1 o2 i1 Dough)")]
     mrules.append(parse_reductions.parse_mixture_reduction_rule("(o1 Oil) + (o2 i1)-> (o1 o2 oily i1)"))
     crules = [parse_reductions.parse_component_reduction_rule("& crushed dried i1 -> powdered i1")]
-    rs = ReductionSystem(crules,mrules)
+    rs = ReductionSystem(mrules+[ReductionRuleComponentAsMixture(c) for c in crules])
     rs.set_type_checker(TestTypeChecker())
     reduced = rs.reduce_mixture(Mixture("(crushed dried Oat) + (Apple Water) + Oil"))
-    self.assertEqual("(Apple Oat oily Dough)",str(reduced))
+    self.assertEqual("(oily Apple Oat Dough)",str(reduced))
 
 
 

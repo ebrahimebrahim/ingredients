@@ -27,7 +27,7 @@ for ing in ingredients:
   ingredients_byname[ing.name] = ing
 
 # Load reduction rules
-reduction_rules_component,reduction_rules_mixture,modifier_tags = parse_reductions.parse(parse_reductions.REDUCTIONS_FILENAME)
+reduction_rules, modifier_tags = parse_reductions.parse(parse_reductions.REDUCTIONS_FILENAME)
 
 # Create type checker
 type_checker = InteractiveTypeChecker(ingredients_byname, modifier_tags)
@@ -36,7 +36,7 @@ def token_str_has_tag(token_str, tag):
   return type_checker.const_has_tag(type_checker.parse_token(token_str) , tag)
 
 # Create reduction system
-rs = ReductionSystem(reduction_rules_component,reduction_rules_mixture)
+rs = ReductionSystem(reduction_rules)
 rs.set_type_checker(type_checker)
 
 
