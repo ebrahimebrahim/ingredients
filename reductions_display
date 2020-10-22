@@ -1,0 +1,7 @@
+# These reduction rules are only applied for the purpose of displaying things nicely
+# They are not meant to be applied to the underlying mixtures
+
+fried i1:Legume -> refried i1
+boiled i1:Legume -> cooked i1
+
+i1:Oil i2:Water -> oily i2

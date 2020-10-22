@@ -1,0 +1,20 @@
+name: Legume
+abstract: True
+inherit: SmallPieces
+
+cook_flame: gain_mod charred
+cook_fry: gain_mod fried;
+cook_boil: gain_mod boiled;
+cook_bake: gain_mod dried; 
+
+---
+
+name: Lentils
+abstract: False
+inherit: Legume
+
+---
+
+name: Chickpeas
+abstract: False
+inherit: Legume

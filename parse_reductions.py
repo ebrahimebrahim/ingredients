@@ -51,7 +51,7 @@ def parse(filepath):
   modifier_tags = {}
 
 
-  f = open(REDUCTIONS_FILENAME)
+  f = open(filepath)
   for line in f:
     line = line.strip() # remove whitespace
     line = line.split('#')[0] # remove comments

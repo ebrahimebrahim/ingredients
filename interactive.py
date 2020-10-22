@@ -21,13 +21,15 @@ class InteractiveTypeChecker(TypeChecker):
 
 
 # Load ingredients
-ingredients = parse_ingredients.parse(parse_ingredients.INGREDIENTS_DIR)
+ingredients = parse_ingredients.parse('ingredient_data')
 ingredients_byname = {}
 for ing in ingredients:
   ingredients_byname[ing.name] = ing
 
 # Load reduction rules
-reduction_rules, modifier_tags = parse_reductions.parse(parse_reductions.REDUCTIONS_FILENAME)
+reduction_rules, modifier_tags = parse_reductions.parse('reductions')
+reduction_rules_display, modifier_tags_display = parse_reductions.parse('reductions_display')
+modifier_tags.update(modifier_tags_display)
 
 # Create type checker
 type_checker = InteractiveTypeChecker(ingredients_byname, modifier_tags)
@@ -37,7 +39,9 @@ def token_str_has_tag(token_str, tag):
 
 # Create reduction system
 rs = ReductionSystem(reduction_rules)
+rs_display = ReductionSystem(reduction_rules_display)
 rs.set_type_checker(type_checker)
+rs_display.set_type_checker(type_checker)
 
 
 class Food:
@@ -141,9 +145,12 @@ class Food:
     else:
       self.apply_action_from_attribute("cook_bake")
 
-  def __str__(self):
+  def __str__(self, reduce_for_display=True):
     pot_str = "Pot containing " if self.in_container else ""
-    return pot_str+str(self.mixture)
+    mixture_display = self.mixture
+    if reduce_for_display:
+      mixture_display = rs_display.reduce_mixture(mixture_display)
+    return pot_str+str(mixture_display)
 
 
 
@@ -219,6 +226,10 @@ class IngredientsCmd(cmd.Cmd):
     print('peupe.')
     return True
 
+  def do_showreal(self, arg):
+    'Show the underlying food items, rather than the prettier display version:  showreal'
+    self.report_foods(False)
+
   def do_EOF(self, arg):
     'Quit (press ctrl+D)'
     print('peup.')
@@ -231,12 +242,12 @@ class IngredientsCmd(cmd.Cmd):
       print("Error: argument should be the number of a food item from the displayed list of foods.")
     return out
 
-  def report_foods(self):
+  def report_foods(self, reduce_for_display=True):
     print()
     if not self.foods:
       print("\t[No foods]")
     for i,food in enumerate(self.foods):
-      print("\t{}: {}".format(i,str(food)))
+      print("\t{}: {}".format(i,food.__str__(reduce_for_display)))
     print()
 
   def postcmd(self,stop,line):
@@ -247,8 +258,8 @@ class IngredientsCmd(cmd.Cmd):
         if food.marked_for_separating_out:
           self.foods.append(Food(Mixture(food.marked_for_separating_out)))
           food.marked_for_separating_out = []
-
-      self.report_foods()
+      if 'showreal' not in line:
+        self.report_foods()
 
     return stop
 

@@ -29,3 +29,12 @@ cook_flame: gain_mod burnt
 cook_fry: gain_mod burnt
 cook_boil: gain_mod soggy
 cook_bake: gain_mod burnt
+
+---
+
+name: SmallPieces
+abstract: True
+inherit: Solid
+
+chop: nothing
+

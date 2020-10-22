@@ -1,0 +1,29 @@
+
+name: Egg
+abstract: False
+inherit: Liquid
+
+mush: gain_mod beaten
+
+cook_fry: gain_mod fried
+cook_boil: gain_mod boiled
+cook_bake: gain_mod fried   # Will get reduced by same rule as cook_fry
+
+---
+
+name: ScrambledEgg
+abstract: False
+inherit: CookedSolid
+
+---
+
+name: SunnySideUpEgg
+abstract: False
+inherit: CookedSolid
+
+---
+
+name: PoachedEgg
+abstract: False
+inherit: CookedSolid
+
