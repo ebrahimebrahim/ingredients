@@ -28,6 +28,7 @@ mashed_overtakes: soggy, chopped, minced
 mashed m1:mashed_overtakes i1 -> mashed i1
 
 mashed dried i1 -> powdered i1
+mashed powdered i1 -> powdered i1
 
 powdered soggy i1 -> mashed i1
 
