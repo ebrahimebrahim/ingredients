@@ -86,6 +86,11 @@ class Food:
             print("Invalid arguments in action:",action)
           else:
             component.tokens.insert(0,args[1])
+        elif args[0]=='lose_mod':
+          if len(args)!=2:
+            print("Invalid arguments in action:",action)
+          else:
+            component.tokens = list(filter(lambda t:t!=args[1] , component.tokens))
         elif args[0]=='delete':
           if len(args)!=1:
             print("Invalid arguments in action:",action)
