@@ -1,7 +1,0 @@
-name: Juicy
-abstract: True
-inherit: Solid
-
-
-mush: gain_mod mashed; yield SELF Water
-cook_bake: gain_mod boiled

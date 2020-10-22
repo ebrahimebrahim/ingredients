@@ -8,3 +8,5 @@ i1:Oil i2:Water -> oily i2
 
 Chickpeas i1 -> Chickpea i1
 Lentils i1 -> Lentil i1
+
+i1:Juicy Water -> i1 Juice

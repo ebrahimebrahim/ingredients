@@ -4,6 +4,15 @@ inherit: None
 
 ---
 
+name: Juicy
+abstract: True
+inherit: None
+
+mush: gain_mod mashed; yield SELF Water
+cook_bake: gain_mod boiled
+
+---
+
 name: Onion
 abstract: False
 inherit: Solid, FlavorRich
@@ -12,7 +21,7 @@ inherit: Solid, FlavorRich
 
 name: Tomato
 abstract: False
-inherit: Juicy, FlavorRich
+inherit: Solid, Juicy, FlavorRich
 
 ---
 
