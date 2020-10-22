@@ -1,11 +1,14 @@
+name: DoubleBoilMashes
+abstract: True
+inherit: None
+
+---
+
 name: Legume
 abstract: True
-inherit: SmallPieces
+inherit: SmallPieces, DoubleBoilMashes
 
-cook_flame: gain_mod charred
-cook_fry: gain_mod fried;
-cook_boil: gain_mod boiled;
-cook_bake: gain_mod dried; 
+cook_bake: gain_mod dried
 
 ---
 

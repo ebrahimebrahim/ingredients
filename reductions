@@ -1,6 +1,10 @@
 # Here are mods that should never double up
-double_collapse: on_fire, boiled, soggy, mashed, powdered, fine, dried
+double_collapse: on_fire, soggy, mashed, powdered, fine, dried
 m1:double_collapse m1 i1 -> m1 i1
+
+boiled boiled i1:DoubleBoilMashes -> mashed i1
+boiled boiled i1 -> boiled i1
+
 
 # Ingredients as mods should never double up with other mods or with base
 i1 i1 i2 -> i1 i2
@@ -69,5 +73,3 @@ beaten fried Egg -> ScrambledEgg
 beaten boiled Egg -> Egg Soup
 fried Egg -> SunnySideUpEgg
 boiled Egg -> PoachedEgg
-
-

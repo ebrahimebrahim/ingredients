@@ -5,3 +5,6 @@ fried i1:Legume -> refried i1
 boiled i1:Legume -> cooked i1
 
 i1:Oil i2:Water -> oily i2
+
+Chickpeas i1 -> Chickpea i1
+Lentils i1 -> Lentil i1
