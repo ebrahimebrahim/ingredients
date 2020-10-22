@@ -1,0 +1,27 @@
+name: SolublePowder # water soluble, to be precise
+abstract: True
+inherit: None
+
+
+chop: nothing
+mush: gain_mod fine
+strain: nothing
+
+cook_flame: delete
+cook_fry: nothing
+cook_boil: nothing
+cook_bake: nothing
+
+---
+
+name: Salt
+abstract: False
+inherit: SolublePowder
+
+---
+
+name: Sugar
+abstract: False
+inherit: SolublePowder
+
+cook_bake: become Caramel

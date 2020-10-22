@@ -66,7 +66,7 @@ class Food:
       ing_name = component.tokens[-1]
       ing_varness, ing_category = type_checker.type_info(ing_name, last=True)
       if ing_varness != 'const':
-        raise Exception("It does not make sense to apply action component expressions with variables: "+str(component))
+        raise Exception("It does not make sense to apply actions to component expressions with variables: "+str(component))
       # lookup in parsed ingredients and find that ingredient's "attribute" attribute (e.g. "chop")
       if ing_name not in ingredients_byname:
         raise Exception("Ingredient does not exist: "+ing_name)
@@ -98,8 +98,8 @@ class Food:
             new_component_tokens = [t if t!='SELF' else ing_name for t in args[1:]]
             new_ing_name = new_component_tokens[-1]
             if new_ing_name not in ingredients_byname:
-              print("Warning: a yield action from {} has produced an ingredient {} that does not exist.\
-                This is probaly bad.".format(ing_name,new_ing_name))
+              print("Warning: a 'yield' action from {} has produced an ingredient {} that does not exist.\
+                This is probably bad.".format(ing_name,new_ing_name))
             self.mixture.components.append(Component(new_component_tokens))
         elif args[0]=='separate_out':
           if len(args)!=1:
@@ -107,6 +107,15 @@ class Food:
           else:
             self.remove_component(component)
             self.marked_for_separating_out.append(component)
+        elif args[0]=='become':
+          if len(args)!=2:
+            print("Invalid arguments in action:",action)
+          else:
+            new_ing_name = args[-1]
+            if new_ing_name not in ingredients_byname:
+              print("Warning: a 'become' action from {} has produced an ingredient {} that does not exist.\
+                This is probably bad.".format(ing_name,new_ing_name))
+            component.tokens[-1] = new_ing_name
         else:
           print("Didn't know what to do with this action: "+action)
     # reduce the mixture using reduction system made out of parsed reductions file

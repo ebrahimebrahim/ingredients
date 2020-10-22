@@ -33,3 +33,12 @@ name: Milk
 abstract: False
 inherit: Water
 
+---
+
+name: Caramel
+abstract: False
+inherit: Liquid
+
+cook_flame: gain_mod burnt
+cook_fry: gain_mod burnt
+cook_bake: gain_mod burnt
