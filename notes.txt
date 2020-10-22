@@ -1,0 +1,28 @@
+create reduction rules special for printing nice names and incorporate them into repl
+
+document the reduction rule and ingredient specification languages
+- reduction rule syntax, especially the lhs. explain the kind of info the type_checker works with
+- qualified ingredient variable and how it has to do with inheritance. include that things always count as inheriting themselves
+- mixture reduction rule syntax
+- ingredient specification: name, abstract, inherit being special
+- the --- to separate ingdts in same file
+- keywords like None and filename that shouldn't be used in ingredients
+- idea of abstract ingdts as ones that will never show up
+- idea of multiple inheritance and overridding order
+- descriptions of the various actions that can go into ingdt attributes and the keywords that can go with them (like SELF with yield)
+
+
+It's a little weird that tags for ingredients are done via inheritance and tags for modifiers are decalred with rules.
+
+I feel like reduction rules do too much of the work, and ingredient definitions do barely anything
+
+Thoughts...
+- more action effect attributes like gain_mod and yield to take some of the work from reduction rules
+- maybe put some reduction rule info directly into the ingredient def in the form of attributes?
+  like maybe what happens when mixed with water can be an attribute?
+- A mixes_into attribute that says that when you have a mixture with the thing then it goes into the other thing?
+- Perhaps an absorbs attribute in the opposite direction? Like Dough should absorb Sugar, or most things really
+- Maybe certain attributes on ingredients can automatically be converted into reduction rules on parsing?
+- Maybe modifiers can have specification system just like ingredients, with tags working like inheritance, and with attributes driving reduction.
+  maybe we can do away with reduction rules if that ends up being good
+
