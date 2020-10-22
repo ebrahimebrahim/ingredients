@@ -1,12 +1,18 @@
+name : FlavorRich
+abstract:True
+inherit: None
+
+---
+
 name: Onion
 abstract: False
-inherit: Solid
+inherit: Solid, FlavorRich
 
 ---
 
 name: Tomato
 abstract: False
-inherit: Juicy
+inherit: Juicy, FlavorRich
 
 ---
 
@@ -48,4 +54,4 @@ inherit: Solid
 
 name: Mushroom
 abstract: False
-inherit: Solid
+inherit: Solid, FlavorRich
