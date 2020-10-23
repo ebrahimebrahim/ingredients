@@ -261,7 +261,6 @@ class IngredientsCmd(cmd.Cmd):
 
   def report_foods(self, reduce_for_display=True):
     print()
-    print("[{}]".format(self.prompt_index))
     if not self.foods:
       print("\t[No foods]")
     for i,food in enumerate(self.foods):
@@ -277,6 +276,8 @@ class IngredientsCmd(cmd.Cmd):
           self.foods.append(Food(Mixture(food.marked_for_separating_out)))
           food.marked_for_separating_out = []
       if all(c not in line for c in ['showreal','debug']):
+        if self.file:
+          print("\n\t[{}]: {}".format(self.prompt_index, line))
         self.report_foods()
 
     self.prompt_index += 1
