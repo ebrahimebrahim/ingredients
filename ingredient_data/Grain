@@ -12,6 +12,12 @@ inherit: Grain
 
 ---
 
+name: Oatmeal
+abstract: False
+inherit: ThickGoop, AbsorbsWater
+
+---
+
 name: Wheat
 abstract: False
 inherit: Grain

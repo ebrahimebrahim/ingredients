@@ -7,11 +7,14 @@ boiled i1:Legume -> cooked i1
 i1:Oil i2:Water -> oily i2
 
 Salt i1 -> salty i1
+Sugar i1 -> sugary i1
 
 Chickpeas i1 -> Chickpea i1
 Lentils i1 -> Lentil i1
 
 i1:Juicy Water -> i1 Juice
 Milk Juice -> creamy Juice
-
 Milk Soup -> creamy Soup
+Milk i1:Liquid -> milky i1
+
+powdered i1:Grain -> i1 Flour

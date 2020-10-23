@@ -27,7 +27,9 @@ for ing in ingredients:
 
 # Restrict set of "gettable" ingredients
 # (In a game, this would be what can be harvested from preingredients in the world)
-excluded_ingdts = ['Soup','Dough','Batter','Ash','Slurry']
+excluded_ingdts = [
+  'Soup','Dough','Batter','Ash','Slurry','Caramel','Oatmeal'
+]
 excluded_ingdts += [i_name for i_name,i in ingredients_byname.items() if "CookedSolid" in i.inherited_from]
 gettable_ingredients = [i_name for i_name in ingredients_byname if i_name not in excluded_ingdts]
 

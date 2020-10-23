@@ -64,3 +64,15 @@ inherit: Solid
 name: Mushroom
 abstract: False
 inherit: Solid, FlavorRich
+
+---
+
+name: Garlic
+abstract: False
+inherit: Solid, FlavorRich
+
+---
+
+name: Ginger
+abstract: False
+inherit: Solid, FlavorRich
