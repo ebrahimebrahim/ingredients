@@ -20,11 +20,11 @@ class Ingredient:
 
 
 
-def apply_till_no_change(f,x,max_iterations):
+def apply_till_no_change(f,x,max_iterations,debug=False):
   """Apply f repeatedly to x and return the result if it converges. Raise Exception otherwise."""
   old_x=copy.deepcopy(x)
   for _ in range(max_iterations):
-    new_x = f(old_x)
+    new_x = f(old_x, debug)
     if new_x == old_x:
       return new_x
     old_x = new_x
@@ -32,14 +32,14 @@ def apply_till_no_change(f,x,max_iterations):
     \t Is there a cycle in your reduction system?".format(x,new_x))
 
 
-def apply_each_rule_till_no_change(rules, x, max_iterations):
+def apply_each_rule_till_no_change(rules, x, max_iterations, debug=False):
   """For each rule in rules, apply it to x until convergence.
      Here a rule just has to have an apply method,
      so it could be a component rule (in which case x must be a Component)
      or a mixture rule (in which case x must be a Mixture)"""
   y = copy.deepcopy(x)
   for rule in rules:
-    y = apply_till_no_change(rule.apply,y,max_iterations)
+    y = apply_till_no_change(rule.apply,y,max_iterations, debug)
   return y
 
 
@@ -50,6 +50,7 @@ class ReductionSystem:
   def __init__(self, rules):
     self.rules = rules
     self.max_iterations = 500
+    self.debug = False
 
 
   def reduce_component(self, component):
@@ -60,24 +61,29 @@ class ReductionSystem:
     component_rules_as_mixture = filter(lambda r : isinstance(r,ReductionRuleComponentAsMixture), self.rules)
     component_rules = map(lambda r : r.component_rule, component_rules_as_mixture)
     return apply_till_no_change(
-      lambda c : apply_each_rule_till_no_change(component_rules,c,self.max_iterations),
+      lambda c,_ : apply_each_rule_till_no_change(component_rules,c,self.max_iterations, self.debug),
       component,
-      self.max_iterations
+      self.max_iterations,
+      self.debug
     )
 
   def reduce_mixture(self, mixture):
     """ First reduce all components of the mixture.
         Then repeatedly apply the mixture rules until mixture is fully reduced
         Return reduced form.
-        Here component is assumed to be a Mixture.
+        Here |mixture| is assumed to be a Mixture.
     """
     return apply_till_no_change(
-      lambda m : apply_each_rule_till_no_change(self.rules,m,self.max_iterations),
+      lambda m,_ : apply_each_rule_till_no_change(self.rules,m,self.max_iterations, self.debug),
       mixture,
-      self.max_iterations
+      self.max_iterations,
+      self.debug
     )
 
   def set_type_checker(self,type_checker):
     'Set the type checker for all reduction rules'
     for rule in self.rules:
       rule.set_type_checker(type_checker)
+
+  def toggle_debug(self):
+    self.debug = not self.debug

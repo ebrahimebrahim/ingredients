@@ -234,8 +234,13 @@ class IngredientsCmd(cmd.Cmd):
     return True
 
   def do_showreal(self, arg):
-    'Show the underlying food items, rather than the prettier display version:  showreal'
+    'Show the underlying food items, rather than the prettier display version: showreal'
     self.report_foods(False)
+
+  def do_debug(self, arg):
+    'Toggle debugging (off by deault): debug'
+    rs.toggle_debug()
+    # rs_display.toggle_debug()
 
   def do_EOF(self, arg):
     'Quit (press ctrl+D)'

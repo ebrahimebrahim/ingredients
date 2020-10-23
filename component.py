@@ -290,7 +290,7 @@ class ReductionRuleComponent:
     """
     return match_component_pattern(self.lhs,component,self.type_checker)
 
-  def apply(self,component):
+  def apply(self,component,debug=False):
     """ Apply the reduction rule to the given Component
         Returns a Component, the result of applying the rule to component
     """
@@ -298,7 +298,15 @@ class ReductionRuleComponent:
     if match is None:
       return component # No match, component is already reduced wrt this rule
 
-    return apply_substitution_to_component(self.rhs, match, self.type_checker)
+    out = apply_substitution_to_component(self.rhs, match, self.type_checker)
+
+    if debug:
+      print("\nRULE",self)
+      print('\tTURN',component)
+      print('\tINTO',out)
+      print()
+
+    return out
 
 
 def apply_substitution_to_component(component, subst_dict, type_checker):

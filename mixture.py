@@ -63,15 +63,24 @@ class ReductionRuleMixture:
     """
     return match_mixture_pattern(self.lhs.components,mixture.components,self.type_checker)
 
-  def apply(self,mixture):
+  def apply(self,mixture,debug=False):
     """ Apply the reduction rule to the given Mixture
         Return the resulting Mixture
     """
     match_result = self.match_lhs(mixture)
+
     if match_result is None:
       return mixture # No match, mixture is already reduced wrt this rule
+
     match_dict, remaining_components = match_result
-    return Mixture([apply_substitution_to_component(c, match_dict,self.type_checker) for c in self.rhs.components] + remaining_components)
+    out = Mixture([apply_substitution_to_component(c, match_dict,self.type_checker) for c in self.rhs.components] + remaining_components)
+
+    if debug:
+      print("\nRULE",self)
+      print('\tTURN',mixture)
+      print('\tINTO',out)
+
+    return out
 
   def set_type_checker(self,type_checker):
     self.type_checker = type_checker
@@ -82,8 +91,8 @@ class ReductionRuleComponentAsMixture:
   def __init__(self, component_rule):
     self.component_rule = component_rule
 
-  def apply(self,mixture):
-    return Mixture([self.component_rule.apply(c) for c in mixture.components])
+  def apply(self,mixture,debug=False):
+    return Mixture([self.component_rule.apply(c,debug) for c in mixture.components])
 
   def set_type_checker(self, type_checker):
     self.component_rule.type_checker = type_checker
