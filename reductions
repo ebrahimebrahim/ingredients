@@ -1,5 +1,5 @@
 # Here are mods that should never double up
-double_collapse: on_fire, soggy, mashed, powdered, fine, dried
+double_collapse: on_fire, soggy, mashed, powdered, fine, dried, beaten
 m1:double_collapse m1 i1 -> m1 i1
 
 boiled boiled i1:DoubleBoilMashes -> mashed i1
@@ -41,8 +41,11 @@ fried Batter -> Pancake
 baked Batter -> Cake
 boiled Batter -> Slurry
 
+# Liquid mixing
 (o1 i1:Liquid) + (o2 i1:Liquid) -> (o1 o2 i1) # repeated same liquid will just mix
-(o1 i1:Water) + (o2 Water) -> (o1 i1 o2 Water) # Watery things mix into Water
+(o1 Water) + (o2 Soup) -> (o1 o2 Soup) # Water mixes into Soup
+(o1 i1:Water) + (o2 Soup) -> (o1 i1 o2 Soup) # then other Watery things mix into Soup
+(o1 i1:Water) + (o2 Water) -> (o1 i1 o2 Water) # then Watery things mix into Water
 (o1 i1:Water) + (o2 i2:Water) -> (o1 o2 i2 i1) # then Watery things mix into each other, with the first one arbitrarily preferred
 (o1 i1:Oil) + (o2 i2:Water) -> (o1 o2 i1 i2) # Watery always dominates between watery and oily things.
 
@@ -71,6 +74,6 @@ o1 FrenchFries + o2 i1:Fat -> o1 o2 i1 FrenchFries
 
 # Eggs
 beaten fried Egg -> ScrambledEgg
-beaten boiled Egg -> Egg Soup
+o1 beaten boiled Egg + o2 Water -> Egg Soup
 fried Egg -> SunnySideUpEgg
 boiled Egg -> PoachedEgg
