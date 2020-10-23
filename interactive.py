@@ -168,6 +168,7 @@ class IngredientsCmd(cmd.Cmd):
 
   def preloop(self):
     self.foods = []
+    self.prompt_index = 0
 
   def do_cut(self, arg):
     'Slice the food of the indicated index in the list : cut 3'
@@ -257,6 +258,7 @@ class IngredientsCmd(cmd.Cmd):
 
   def report_foods(self, reduce_for_display=True):
     print()
+    print("[{}]".format(self.prompt_index))
     if not self.foods:
       print("\t[No foods]")
     for i,food in enumerate(self.foods):
@@ -273,6 +275,8 @@ class IngredientsCmd(cmd.Cmd):
           food.marked_for_separating_out = []
       if all(c not in line for c in ['showreal','debug']):
         self.report_foods()
+
+    self.prompt_index += 1
 
     return stop
 
