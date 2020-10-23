@@ -271,7 +271,7 @@ class IngredientsCmd(cmd.Cmd):
         if food.marked_for_separating_out:
           self.foods.append(Food(Mixture(food.marked_for_separating_out)))
           food.marked_for_separating_out = []
-      if 'showreal' not in line:
+      if all(c not in line for c in ['showreal','debug']):
         self.report_foods()
 
     return stop
