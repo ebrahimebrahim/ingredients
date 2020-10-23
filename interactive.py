@@ -206,7 +206,7 @@ class IngredientsCmd(cmd.Cmd):
     self.foods.pop(int(arg))
 
   def help_get(self):
-    print('Grab an ingredient : get Onion\nPossible ingredients: '+', '.join(ing.name for ing in ingredients))
+    print('Grab an ingredient : get Onion\nPossible ingredients: '+', '.join(gettable_ingredients))
 
   def do_mix(self,arg):
     'Mix foods of the indicated indices in the list: mix 2 3 5'
