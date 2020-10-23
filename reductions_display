@@ -1,6 +1,9 @@
 # These reduction rules are only applied for the purpose of displaying things nicely
 # They are not meant to be applied to the underlying mixtures
 
+# ingredient modifiers sound more naturaly when adjacent to base ingredient
+& i1 m1 i2 -> m1 i1 i2
+
 fried i1:Legume -> refried i1
 boiled i1:Legume -> cooked i1
 
