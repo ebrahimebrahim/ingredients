@@ -45,7 +45,7 @@ rs_display.set_type_checker(type_checker)
 
 
 class Food:
-  def __init__(self,mixture=Mixture(),in_container=False):
+  def __init__(self,mixture=Mixture(),in_container=True):
     self.mixture = mixture
     self.in_container = in_container
     self.marked_for_deletion = False
