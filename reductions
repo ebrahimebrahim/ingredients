@@ -30,15 +30,14 @@ mashed m1:mashed_overtakes i1 -> mashed i1
 mashed dried i1 -> powdered dried i1
 o1 dried i1 + o2 i2:Water -> o1 i1 + o2 i2 # presence of watery things removes dried
 
-mashed powdered i1 -> powdered i1
-powdered soggy i1 -> mashed i1
-o1 powdered i1 + o2 i2:Water -> o1 o2 i1 i2
-
 # Baking
 (o1:Solid,Liquid powdered i1:Grain) + (o2 i2:Water) -> (o1 o2 i1 Dough)
 (o1:Solid,Liquid mashed i1) + (o2 Dough) -> (o1 o2 i1 Dough)
 (o1 Dough) + (o2 Water) -> (o1 o2 Batter)
 
+mashed powdered i1 -> powdered i1
+powdered soggy i1 -> mashed i1
+o1 powdered i1 + o2 i2:Water -> o1 o2 i1 i2 # Note that this needs to come after Dough rules
 
 # Liquid mixing
 (o1 i1:Liquid) + (o2 i1:Liquid) -> (o1 o2 i1) # repeated same liquid will just mix
