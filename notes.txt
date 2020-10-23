@@ -33,3 +33,29 @@ Here's an example of something I don't like:
 The abstract ing FlavorRich is defined just to group things,
 but what it actually does is in reduction rules (near soup stuff), which is
 far away from its definition and hard to find.
+
+---
+
+Besides what attributes matter for underlying cooking logic (i.e. the stuff that can be explored in interactive.py),
+there are the following attributes to think about:
+- pointer to resources that help with drawing the ingredient
+- information about what preingredients can generate the ingredient
+- information about what tools can be used to make actions happen to the ingredient (e.g. you need a blender to "mush" certain things)
+
+---
+
+ideas for actual gameplay:
+- achievements (with no "obligation") for various fully prepared recipes
+- you are a cook who is hired by a restaurant to improve their menu, which starts out somehow crappy
+- in each game, the customers have a randomly generated taste distribution, which is secret
+- each day of the game, you gather ingredients and cook some dishes and they are added to the restaurant's menu to replace their least popular dishes
+- each day you see the previous day's feedback in the form of reviews on a yelp-like system
+- your goal is to improve these reviews before the end of your contract with the restaurant
+- at the end, the menu is fixed, and the endgame screen is a few days of reviews, along with your average star rating
+- would be cool to use some kind of language model to generate reviews of a particular star rating, seeded with the foods that are liked/disliked on the menu
+- ingredients are gathered from: your garden, your pantry, the supermarket, the farmer, the woods
+- that was all weekday mode. weekend mode is more chill: you have your own craving, which is not secret. you can try to make something that meets your craving, or just do w/e.
+
+
+
+
