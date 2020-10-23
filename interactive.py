@@ -240,6 +240,7 @@ class IngredientsCmd(cmd.Cmd):
   def do_debug(self, arg):
     'Toggle debugging (off by deault): debug'
     rs.toggle_debug()
+    print('Debugging turned','on' if rs.debug else 'off')
     # rs_display.toggle_debug()
 
   def do_EOF(self, arg):
