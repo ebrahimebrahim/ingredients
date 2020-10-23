@@ -5,10 +5,12 @@ m1:double_collapse m1 i1 -> m1 i1
 boiled boiled i1:DoubleBoilMashes -> mashed i1
 boiled boiled i1 -> boiled i1
 
-
 # Ingredients as mods should never double up with other mods or with base
 i1 i1 i2 -> i1 i2
 i1 i1 -> i1
+
+# Ingredients that are not flavors should be expelled from the list of modifiers
+i1:NotFlavor i2 -> i2
 
 chopped chopped i1 -> minced i1
 chopped minced i1 -> minced i1
@@ -56,18 +58,15 @@ o1 i1:Fat + o2 i1:Fat -> o1 o2 i1 # repeated same fat will mix
 (o1 Salt) + (o2 i1:Solid) -> (o2 salty i1)
 
 
-# Boiling things in water
+# Soup, and resolution of "boiled i1:Water"
 cut_up: chopped, minced, mashed
 boiled i2:Solid Water -> i2 Soup
 boiled i2:Solid i1:Water -> i2 i1 Soup
-o1 mashed i1:Solid + o2 boiled i2:Water ->  o1 o2 i1 Soup
-o1 m1:cut_up i1:FlavorRich + o2 boiled i2:Water ->  o1 o2 i1 Soup
-o1 Oat + o2 boiled Water -> o1 o2 Oatmeal
-o1 Oat + o2 boiled i1:Water -> o1 o2 i1 Oatmeal
-# clean out the "boiled Water" signal
-boiled Water -> Water
-boiled Soup -> Soup
-boiled Oatmeal -> Oatmeal
+boiled i1:Water -> i1
+o1 mashed boiled i1:Solid + o2 i2:Water ->  o1 i1 Soup + o2 i2
+o1 m1:cut_up boiled i1:FlavorRich + o2 i2:Water ->  o1 i1 Soup + o2 i2
+o1 boiled Oat -> o1 Oatmeal
+
 
 
 o1 boiled Rice + o2 i1:Water -> o1 o2 CookedRice

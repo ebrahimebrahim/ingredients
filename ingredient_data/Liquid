@@ -23,15 +23,9 @@ cook_boil: gain_mod boiled # for possibly becoming soup
 
 ---
 
-name: AbsorbsWater
-abstract: True
-inherit: None
-
----
-
 name: Soup
 abstract: False
-inherit: Water, AbsorbsWater
+inherit: Water, AbsorbsWater, NotFlavor
 
 ---
 
@@ -58,5 +52,4 @@ inherit: Liquid
 strain: nothing
 
 cook_fry: gain_mod fried
-cook_boil: gain_mod boiled
 cook_bake: gain_mod baked

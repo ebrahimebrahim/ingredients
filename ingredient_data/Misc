@@ -12,3 +12,15 @@ cook_flame: delete
 cook_fry: nothing
 cook_boil: nothing
 cook_bake: nothing
+
+---
+
+name: AbsorbsWater
+abstract: True
+inherit: None
+
+---
+
+name: NotFlavor
+abstract: True
+inherit: None
