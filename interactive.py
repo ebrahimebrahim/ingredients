@@ -12,7 +12,10 @@ class InteractiveTypeChecker(TypeChecker):
 
   def tags_of_const(self, const_token):
     if const_token.category in ['ing','ingmod']:
-      return [const_token.name] + ingredients_byname[const_token.name].inherited_from
+      out = ['Ingredient', const_token.name] # all ingredients have magic "Ingredient" tag and their own name
+      out += ingredients_byname[const_token.name].inherited_from
+      out += modifier_tags.get(const_token.name,[]) # ingredients can also take on modifier tags
+      return out
     if const_token.category == 'mod':
       return modifier_tags.get(const_token.name,[])
   def is_ingredient(self,name):

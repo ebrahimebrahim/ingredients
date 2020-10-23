@@ -19,3 +19,7 @@ Milk Soup -> creamy Soup
 Milk i1:Liquid -> milky i1
 
 powdered i1:Grain -> i1 Flour
+
+burnt_flavor burnt_physical i1 -> burnt i1
+burnt_physical i1 -> burnt i1
+burnt_flavor i1 -> burn_flavored i1

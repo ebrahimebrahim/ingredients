@@ -1,5 +1,5 @@
 # Here are mods that should never double up
-double_collapse: on_fire, soggy, mashed, powdered, fine, dried, beaten
+double_collapse: on_fire, soggy, mashed, powdered, fine, dried, beaten, burnt_flavor
 m1:double_collapse m1 i1 -> m1 i1
 
 boiled boiled i1:DoubleBoilMashes -> mashed i1
@@ -12,13 +12,19 @@ i1 i1 -> i1
 # Ingredients that are not flavors should be expelled from the list of modifiers
 i1:NotFlavor i2 -> i2
 
+# Some modifiers describe flavor aspect of the base ingredient, while others are physical
+# Modifiers that are ingredients always describe flavor, but they are excluded from "flavor" tag
+# Notice that being "burnt" has both aspects
+flavor: burnt_flavor
+physical: sliced, chopped, minced, mashed, fried, charred, baked, burnt_physical, soggy, boiled, powdered, dried, on_fire, fine, beaten
+
 sliced sliced i1 -> chopped i1
 sliced chopped i1 -> minced i1
 sliced minced i1 -> minced i1
 
-can_burn: fried, charred, baked, burnt
-o1 m1:can_burn burnt i1 -> Ash
-m1:can_burn   m2:can_burn   i1 ->   burnt  i1
+can_burn: fried, charred, baked, burnt_physical
+o1 m1:can_burn burnt_physical i1 -> Ash
+m1:can_burn   m2:can_burn   i1 ->   burnt_physical burnt_flavor  i1
 
 
 & fried boiled i1 -> fried i1
@@ -34,13 +40,13 @@ mashed dried i1 -> powdered dried i1
 o1 dried i1 + o2 i2:Water -> o1 i1 + o2 i2 # presence of watery things removes dried
 
 # Baking
-(o1:Solid,Liquid powdered i1:Grain) + (o2 i2:Water) -> (o1 o2 i1 Dough)
-(o1:Solid,Liquid mashed i1) + (o2 Dough) -> (o1 o2 i1 Dough)
+(o1:Ingredient,flavor powdered i1:Grain) + (o2 i2:Water) -> (o1 o2 i1 Dough)
+(o1:Ingredient,flavor mashed i1) + (o2 Dough) -> (o1 o2 i1 Dough)
 (o1 Dough) + (o2 Water) -> (o1 o2 Batter)
 
 mashed powdered i1 -> powdered i1
 powdered soggy i1 -> mashed i1
-o1 powdered i1 + o2 i2:Water -> o1 o2 i1 i2 # Note that this needs to come after Dough rules
+o1:Ingredient,flavor powdered i1 + o2 i2:Water -> o1 o2 i1 i2 # Note that this needs to come after Dough rules
 
 # Liquid mixing
 (o1 i1:Liquid) + (o2 i1:Liquid) -> (o1 o2 i1) # repeated same liquid will just mix
@@ -48,15 +54,15 @@ o1 powdered i1 + o2 i2:Water -> o1 o2 i1 i2 # Note that this needs to come after
 (o1 i1:Water) + (o2 i2:AbsorbsWater) -> (o1 i1 o2 i2) # then other Watery things mix into Soup/Oatmeal
 (o1 i1:Water) + (o2 Water) -> (o1 i1 o2 Water) # then Watery things mix into Water
 (o1 i1:Water) + (o2 i2:Water) -> (o1 o2 i2 i1) # then Watery things mix into each other, with the first one arbitrarily preferred
-(o1 i1:Oil) + (o2 i2:Water) -> (o1 o2 i1 i2) # Watery always dominates between watery and oily things.
+(o1:Ingredient,flavor i1:Oil) + (o2 i2:Water) -> (o1 o2 i1 i2) # Watery always dominates between watery and oily things.
 
 # Fat mixing
 o1 i1:Fat + o2 i1:Fat -> o1 o2 i1 # repeated same fat will mix
 
 (o1 on_fire i1) + (o2 i2:Water) -> (o1 i1) + (o2 i2:Water)
 
-(o1 i1:SolublePowder) + (o2 i2:Water) -> (o2 i1 i2)
-(o1 Salt) + (o2 i1:Solid) -> (o2 salty i1)
+(o1:Ingredient,flavor i1:SolublePowder) + (o2 i2:Water) -> (o1 o2 i1 i2)
+(o1:Ingredient,flavor Salt) + (o2 i1:Solid) -> (o2 o1 Salt i1)
 
 
 # Soup, and resolution of "boiled i1:Water"
@@ -64,18 +70,18 @@ cut_up: sliced, chopped, minced, mashed
 boiled i2:Solid Water -> i2 Soup
 boiled i2:Solid i1:Water -> i2 i1 Soup
 boiled i1:Water -> i1
-o1 mashed boiled i1:Solid + o2 i2:Water ->  o1 i1 Soup + o2 i2
-o1 m1:cut_up boiled i1:FlavorRich + o2 i2:Water ->  o1 i1 Soup + o2 i2
-o1 boiled Oat -> o1 Oatmeal
+o1:Ingredient,flavor mashed boiled i1:Solid + o2 i2:Water ->  o1 i1 Soup + o2 i2
+o1:Ingredient,flavor m1:cut_up boiled i1:FlavorRich + o2 i2:Water ->  o1 i1 Soup + o2 i2
+
+o1:Ingredient,flavor boiled Oat -> o1 Oatmeal
 
 
+o1:Ingredient,flavor boiled Rice + o2 i1:Water -> o1 o2 CookedRice
 
-o1 boiled Rice + o2 i1:Water -> o1 o2 CookedRice
-
-& fried sliced Potato -> PotatoChips
-& fried chopped Potato -> FrenchFries
-o1 FrenchFries + o2 i1:Fat -> o1 o2 i1 FrenchFries
-& fried minced Potato -> HashBrowns
+o1:Ingredient,flavor & fried sliced Potato -> o1 PotatoChips
+o1:Ingredient,flavor & fried chopped Potato -> o1 FrenchFries
+o1:Ingredient,flavor & fried minced Potato -> o1 HashBrowns
+o1 i1:FriedFood + o2:Ingredient,flavor i2:Fat -> o1 o2 i2 i1
 
 
 # Eggs
