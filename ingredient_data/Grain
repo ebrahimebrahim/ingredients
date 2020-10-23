@@ -26,7 +26,7 @@ inherit: Grain
 
 name: CookedRice
 abstract: False
-inherit: Solid
+inherit: CookedSolid
 
 cook_boil: gain_mod mashed
 chop: gain_mod minced

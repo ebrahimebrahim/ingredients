@@ -19,12 +19,17 @@ class InteractiveTypeChecker(TypeChecker):
     return name in ingredients_byname.keys()
 
 
-
 # Load ingredients
 ingredients = parse_ingredients.parse('ingredient_data')
 ingredients_byname = {}
 for ing in ingredients:
   ingredients_byname[ing.name] = ing
+
+# Restrict set of "gettable" ingredients
+# (In a game, this would be what can be harvested from preingredients in the world)
+excluded_ingdts = ['Soup','Dough','Batter','Ash','Slurry']
+excluded_ingdts += [i_name for i_name,i in ingredients_byname.items() if "CookedSolid" in i.inherited_from]
+gettable_ingredients = [i_name for i_name in ingredients_byname if i_name not in excluded_ingdts]
 
 # Load reduction rules
 reduction_rules, modifier_tags = parse_reductions.parse('reductions')
@@ -184,12 +189,12 @@ class IngredientsCmd(cmd.Cmd):
 
   def do_get(self, arg):
     'Grab an ingredient : get Onion'
-    if arg not in ingredients_byname:
-      possible_matches = [k for k in ingredients_byname.keys() if k.lower()==arg.lower()]
+    if arg not in gettable_ingredients:
+      possible_matches = [k for k in gettable_ingredients if k.lower()==arg.lower()]
       if possible_matches:
         arg = possible_matches[0]
       else:
-        print("Not an ingredient. Possible ingredients: "+', '.join(ing.name for ing in ingredients))
+        print("Not an ingredient. Possible ingredients: "+', '.join(gettable_ingredients))
         return
     self.foods.append(Food(Mixture(arg)))
 
@@ -270,7 +275,7 @@ class IngredientsCmd(cmd.Cmd):
       partial_arg = split_line[1]
     if len(partial_arg)>0:
       partial_arg = partial_arg[0].upper() + partial_arg[1:]
-    return [ing.name for ing in ingredients if partial_arg in ing.name]
+    return [ing for ing in gettable_ingredients if partial_arg in ing]
 
 
     # ----- record and playback ----- (Copied from the example in the docs)
