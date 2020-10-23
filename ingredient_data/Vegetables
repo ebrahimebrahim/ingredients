@@ -31,6 +31,12 @@ inherit: Solid
 
 ---
 
+name: PotatoChips
+abstract: False
+inherit: CookedSolid
+
+---
+
 name: FrenchFries
 abstract: False
 inherit: CookedSolid

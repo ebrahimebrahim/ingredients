@@ -3,7 +3,7 @@ abstract: False
 inherit: None
 
 
-chop: nothing
+slice: nothing
 
 mush: nothing
 strain: separate_out

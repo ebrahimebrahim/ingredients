@@ -3,7 +3,7 @@ abstract: True
 inherit: None
 
 
-chop: gain_mod chopped
+slice: gain_mod sliced
 
 mush: gain_mod mashed
 strain: nothing
@@ -20,7 +20,7 @@ abstract: True
 inherit: Solid
 
 
-chop: gain_mod chopped
+slice: gain_mod sliced
 
 mush: gain_mod mashed
 strain: nothing
@@ -36,5 +36,5 @@ name: SmallPieces
 abstract: True
 inherit: Solid
 
-chop: nothing
+slice: nothing
 

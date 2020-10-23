@@ -2,7 +2,7 @@ name: Grain
 abstract: True
 inherit: Dry
 
-chop: nothing
+slice: nothing
 
 ---
 
@@ -35,4 +35,4 @@ abstract: False
 inherit: CookedSolid
 
 cook_boil: gain_mod mashed
-chop: gain_mod minced
+slice: gain_mod minced

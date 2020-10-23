@@ -78,7 +78,7 @@ class Food:
       ing_varness, ing_category = type_checker.type_info(ing_name, last=True)
       if ing_varness != 'const':
         raise Exception("It does not make sense to apply actions to component expressions with variables: "+str(component))
-      # lookup in parsed ingredients and find that ingredient's "attribute" attribute (e.g. "chop")
+      # lookup in parsed ingredients and find that ingredient's "attribute" attribute (e.g. "slice")
       if ing_name not in ingredients_byname:
         raise Exception("Ingredient does not exist: "+ing_name)
       ing = ingredients_byname[ing_name]
@@ -169,10 +169,10 @@ class IngredientsCmd(cmd.Cmd):
   def preloop(self):
     self.foods = []
 
-  def do_chop(self, arg):
-    'Chop the food of the indicated index in the list : chop 3'
+  def do_cut(self, arg):
+    'Slice the food of the indicated index in the list : cut 3'
     if not self.validate_foods_index(arg): return
-    self.foods[int(arg)].apply_action_from_attribute('chop')
+    self.foods[int(arg)].apply_action_from_attribute('slice')
 
   def do_mush(self, arg):
     'Mash, blend, grind, or press the food of the indicated index in the list : mush 3'

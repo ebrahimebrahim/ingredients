@@ -12,8 +12,9 @@ i1 i1 -> i1
 # Ingredients that are not flavors should be expelled from the list of modifiers
 i1:NotFlavor i2 -> i2
 
-chopped chopped i1 -> minced i1
-chopped minced i1 -> minced i1
+sliced sliced i1 -> chopped i1
+sliced chopped i1 -> minced i1
+sliced minced i1 -> minced i1
 
 can_burn: fried, charred, baked, burnt
 o1 m1:can_burn burnt i1 -> Ash
@@ -26,7 +27,7 @@ m1:can_burn   m2:can_burn   i1 ->   burnt  i1
 cooked_nonboil: fried, charred, baked
 & m1:cooked_nonboil soggy i1 -> m1 i1
 
-mashed_overtakes: soggy, chopped, minced
+mashed_overtakes: soggy, sliced, chopped, minced
 mashed m1:mashed_overtakes i1 -> mashed i1
 
 mashed dried i1 -> powdered dried i1
@@ -59,7 +60,7 @@ o1 i1:Fat + o2 i1:Fat -> o1 o2 i1 # repeated same fat will mix
 
 
 # Soup, and resolution of "boiled i1:Water"
-cut_up: chopped, minced, mashed
+cut_up: sliced, chopped, minced, mashed
 boiled i2:Solid Water -> i2 Soup
 boiled i2:Solid i1:Water -> i2 i1 Soup
 boiled i1:Water -> i1
@@ -71,6 +72,7 @@ o1 boiled Oat -> o1 Oatmeal
 
 o1 boiled Rice + o2 i1:Water -> o1 o2 CookedRice
 
+& fried sliced Potato -> PotatoChips
 & fried chopped Potato -> FrenchFries
 o1 FrenchFries + o2 i1:Fat -> o1 o2 i1 FrenchFries
 & fried minced Potato -> HashBrowns

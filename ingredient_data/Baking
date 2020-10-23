@@ -2,7 +2,7 @@ name: Dough
 abstract: False
 inherit: Solid
 
-chop: nothing
+slice: nothing
 mush: nothing
 
 cook_bake: become Bread

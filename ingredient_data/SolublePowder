@@ -3,7 +3,7 @@ abstract: True
 inherit: None
 
 
-chop: nothing
+slice: nothing
 mush: gain_mod fine
 strain: nothing
 

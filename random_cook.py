@@ -11,15 +11,19 @@ for ing_name in ingdts_to_use:
   icmd.do_get(ing_name)
 icmd.report_foods()
 
-print("Chopping and mushing...")
+print("Cutting up...")
 
 for i in range(len(icmd.foods)):
   rand = random.random()
-  if rand < 0.2 :
-    icmd.do_chop(str(i))
+  if rand < 0.15 :
+    icmd.do_cut(str(i))
   elif rand < 0.3 :
-    icmd.do_chop(str(i))
-    icmd.do_chop(str(i))
+    icmd.do_cut(str(i))
+    icmd.do_cut(str(i))
+  elif rand < 0.45 :
+    icmd.do_cut(str(i))
+    icmd.do_cut(str(i))
+    icmd.do_cut(str(i))
   elif rand < 0.6:
     icmd.do_mush(str(i))
 
