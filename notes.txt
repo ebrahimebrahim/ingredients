@@ -41,6 +41,7 @@ there are the following attributes to think about:
 - pointer to resources that help with drawing the ingredient
 - information about what preingredients can generate the ingredient
 - information about what tools can be used to make actions happen to the ingredient (e.g. you need a blender to "mush" certain things)
+- 
 
 ---
 
@@ -55,6 +56,16 @@ ideas for actual gameplay:
 - would be cool to use some kind of language model to generate reviews of a particular star rating, seeded with the foods that are liked/disliked on the menu
 - ingredients are gathered from: your garden, your pantry, the supermarket, the farmer, the woods
 - that was all weekday mode. weekend mode is more chill: you have your own craving, which is not secret. you can try to make something that meets your craving, or just do w/e.
+
+How would flavor and customer taste work?
+- List different flavor components like nutty, peachy, peary, salty, tomatoey, vinegary
+  This would probably be a massive list
+- A taste vector is an assignment of a weight to each item
+- Individual ingredients and modifiers have taste vectors, and cooking a dish somehow combines taste vectors
+- The society of each game has a randomly chosen taste vector, and each customer has that taste vector plus some noise
+- The randomly chosen taste vector needs to incorporate correlations between taste components:
+  Organize the list into a tree of categories and subcategories,
+  and generate weights for the categories before using them as means to generate weights for the subcategories
 
 
 
