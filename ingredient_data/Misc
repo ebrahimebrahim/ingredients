@@ -21,6 +21,12 @@ inherit: None
 
 ---
 
+name: SoggyInWater
+abstract: True
+inherit: None
+
+---
+
 name: NotFlavor
 abstract: True
 inherit: None

@@ -1,4 +1,5 @@
 import copy
+import condition_syntax_tree
 
 
 class Component:
@@ -35,7 +36,7 @@ class Token:
     token_str_colon_split = token_str.split(':')
     self.name = token_str_colon_split[0]
     if self.varness == "qvar":
-      self.qualifiers = token_str_colon_split[1].split(',')
+      self.qualifier = condition_syntax_tree.Cst(token_str_colon_split[1])
 
   def matches(self,const_token,type_checker):
     'Return whether this token pattern matches the |const_token|, which is a Token'
@@ -43,8 +44,11 @@ class Token:
     if self.category != const_token.category: return False
     if self.varness == 'uqvar' : return True
     if self.varness == 'const' : return self.name==const_token.name
-    if self.varness == 'qvar' : return type_checker.const_satisfies_qualifiers(const_token,self.qualifiers)
+    if self.varness == 'qvar' : return type_checker.const_satisfies_qualifier(const_token,self.qualifier)
     raise ValueError
+
+  def __eq__(self,other):
+    self.str==other.str
 
 
 class TypeChecker:
@@ -117,9 +121,12 @@ class TypeChecker:
     'Convert the given token string into a Token'
     return Token(token_str, self.type_info(token_str))
 
-  def const_satisfies_qualifiers(self,const_token,qualifiers_list):
-    'Return whether any of the tags that const_token has are in qualifiers_list'
-    return any(tag in qualifiers_list for tag in self.tags_of_const(const_token))
+  def const_satisfies_qualifier(self,const_token,cst):
+    'Return whether the tags that const_token has make it qualify for the condition_syntax_tree.Cst |cst|'
+    tags_in_qualifier_condition = cst.symbols()
+    tags_of_const_token = self.tags_of_const(const_token)
+    truth_mapping = {tag:(tag in tags_of_const_token)  for tag in tags_in_qualifier_condition}
+    return cst.evaluate(truth_mapping)
 
   def is_ingredient(self,name):
     'Return whether |name| is the name of an ingredient'
@@ -143,7 +150,7 @@ class ComponentRuleLHS:
   Internal structure:
   - component: a Component
   - strictness: a strictness setting for pattern matching
-  - o_dict: a dict mapping qualified 'o' variables to their list of associated tags
+  - o_dict: a dict mapping qualified 'o' variables to their qualifier condition_syntax_tree.Cst
   and unqualified 'o' variables to None
   """
   def __init__(self, lhs_string):
@@ -158,7 +165,7 @@ class ComponentRuleLHS:
           try:
             a,b = t.split(':')
             assert(a[1:].isnumeric())
-            self.o_dict[a] = b.split(',')
+            self.o_dict[a] = condition_syntax_tree.Cst(b)
           except:
             raise Exception("Invalid token in '{}'".format(lhs_string))
         else: break
@@ -176,7 +183,7 @@ class ComponentRuleLHS:
     self.component = Component(split)
 
   def __str__(self):
-    o_header = ' '.join(ovar+('' if self.o_dict[ovar] is None else ':'+','.join(self.o_dict[ovar])) for ovar in self.o_dict)
+    o_header = ' '.join(ovar+('' if self.o_dict[ovar] is None else ':'+self.o_dict[ovar].condition_string) for ovar in self.o_dict)
     out_parts = []
     if o_header!='': out_parts.append(o_header)
     if self.strictness!='': out_parts.append(self.strictness)
@@ -263,9 +270,9 @@ def add_to_o_assignment(match_dict, const_tokens, o_dict, type_checker):
   if not o_dict:
     match_dict['o_auto'] = match_dict.get('o_auto',[]) + [tt.name for tt in const_tokens]
   else:
-    for ovar,ovar_qualifiers in o_dict.items():
+    for ovar,ovar_qualifier in o_dict.items():
       match_dict[ovar] = match_dict.get(ovar,[]) +\
-        [tt.name for tt in const_tokens if ovar_qualifiers is None or type_checker.const_satisfies_qualifiers(tt,ovar_qualifiers)]
+        [tt.name for tt in const_tokens if ovar_qualifier is None or type_checker.const_satisfies_qualifier(tt,ovar_qualifier)]
 
 
 class ReductionRuleComponent:
