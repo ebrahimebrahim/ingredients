@@ -1,5 +1,5 @@
 # Here are mods that should never double up
-double_collapse: on_fire, soggy, mashed, powdered, fine, dried, beaten, burnt_flavor
+double_collapse: on_fire, soggy, mashed, powdered, fine, dried, beaten, burnt_flavor, soaked
 m1:double_collapse m1 i1 -> m1 i1
 
 boiled boiled i1:DoubleBoilMashes -> mashed i1
@@ -15,8 +15,9 @@ i1:NotFlavor i2 -> i2
 # Some modifiers describe flavor aspect of the base ingredient, while others are physical
 # Modifiers that are ingredients always describe flavor, but they are excluded from "flavor" tag
 # Notice that being "burnt" has both aspects
-flavor: burnt_flavor
+flavor: burnt_flavor, nutty
 physical: sliced, chopped, minced, mashed, fried, charred, baked, burnt_physical, soggy, boiled, powdered, dried, on_fire, fine, beaten
+cooked: fried, charred, baked, boiled
 
 sliced sliced i1 -> chopped i1
 sliced chopped i1 -> minced i1
@@ -27,14 +28,11 @@ burnt i1 -> burnt_physical burnt_flavor i1
 o1 m1:can_burn burnt_physical i1 -> Ash
 m1:can_burn   m2:can_burn   i1 ->   burnt_physical burnt_flavor  i1
 
-# Causes infinite loop!
 (o1 i1:SoggyInWater !! soggy i1) + (o2 i2:Water) -> soggy o1 i1 + o2 i2
 
 & fried boiled i1 -> fried i1
-& boiled fried i1 -> soggy i1
-& boiled soggy i1 -> soggy i1
-cooked_nonboil: fried, charred, baked
-& m1:cooked_nonboil soggy i1 -> m1 i1
+& boiled fried i1 !! soggy i1 -> soggy boiled fried i1
+& m1:(cooked&!boiled) soggy i1 -> m1 i1
 
 mashed_overtakes: soggy, sliced, chopped, minced
 mashed m1:mashed_overtakes i1 -> mashed i1
@@ -77,7 +75,6 @@ o1:Ingredient|flavor mashed boiled i1:Solid + o2 i2:Water ->  o1 i1 Soup + o2 i2
 o1:Ingredient|flavor m1:cut_up boiled i1:FlavorRich + o2 i2:Water ->  o1 i1 Soup + o2 i2
 
 o1:Ingredient|flavor boiled Oat -> o1 Oatmeal
-
 
 o1:Ingredient|flavor boiled Rice + o2 i1:Water -> o1 o2 CookedRice
 

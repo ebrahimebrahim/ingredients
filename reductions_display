@@ -5,7 +5,7 @@
 fried i1:Legume -> refried i1
 boiled i1:Legume -> cooked i1
 
-i1:Oil i2:Water -> oily i2
+i1:Oil i2 -> oily i2
 
 Salt i1 -> salty i1
 Sugar i1 -> sugary i1
@@ -23,3 +23,5 @@ powdered i1:Grain -> i1 Flour
 burnt_flavor burnt_physical i1 -> burnt i1
 burnt_physical i1 -> burnt i1
 burnt_flavor i1 -> burn_flavored i1
+
+fried CookedRice -> FriedRice

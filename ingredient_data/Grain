@@ -28,11 +28,19 @@ name: Rice
 abstract: False
 inherit: Grain
 
+cook_fry: become PuffedRice
+
 ---
 
 name: CookedRice
 abstract: False
-inherit: CookedSolid
+inherit: CookedSolid, SmallPieces
 
 cook_boil: gain_mod mashed
-slice: gain_mod minced
+cook_fry: gain_mod fried
+
+---
+
+name: PuffedRice
+abstract: False
+inherit: CookedSolid, SmallPieces

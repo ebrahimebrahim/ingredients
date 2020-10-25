@@ -27,6 +27,6 @@ cook_bake: gain_mod burnt
 
 name: SmallPieces
 abstract: True
-inherit: Solid
+inherit: None
 
-slice: nothing
+slice: gain_mod minced

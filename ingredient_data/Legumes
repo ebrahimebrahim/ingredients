@@ -6,7 +6,7 @@ inherit: None
 
 name: Legume
 abstract: True
-inherit: SmallPieces, DoubleBoilMashes
+inherit: Solid, SmallPieces, DoubleBoilMashes
 
 cook_bake: gain_mod dried
 
