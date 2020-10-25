@@ -87,6 +87,10 @@ class TestPatternMatch(unittest.TestCase):
           {'i1': 'AnIngredient', 'o5': ['salty']} ),
       ("o5 & salty soggy i1", "soggy salty salty AnIngredient",
           None ),
+      ("o5 & salty soggy i1 !! neupy", "salty soggy peupy AnIngredient",
+          {'i1':'AnIngredient', 'o5':['peupy']} ),
+      ("o5 & salty soggy i1 !! peupy", "salty soggy peupy AnIngredient",
+          None ),
     ]
     for pattern, target, expected in examples:
       match = match_component_pattern(

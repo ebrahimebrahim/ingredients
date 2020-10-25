@@ -28,7 +28,7 @@ o1 m1:can_burn burnt_physical i1 -> Ash
 m1:can_burn   m2:can_burn   i1 ->   burnt_physical burnt_flavor  i1
 
 # Causes infinite loop!
-# o1 i1:SoggyInWater + o2 i2:Water -> soggy o1 i1 + o2 i2
+(o1 i1:SoggyInWater !! soggy i1) + (o2 i2:Water) -> soggy o1 i1 + o2 i2
 
 & fried boiled i1 -> fried i1
 & boiled fried i1 -> soggy i1

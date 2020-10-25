@@ -152,10 +152,18 @@ class ComponentRuleLHS:
   - strictness: a strictness setting for pattern matching
   - o_dict: a dict mapping qualified 'o' variables to their qualifier condition_syntax_tree.Cst
   and unqualified 'o' variables to None
+  - dont_match: possibly another ComponentRuleLHS representing a pattern to *not* match in order for this ComponentRuleLHS to match
   """
   def __init__(self, lhs_string):
-    self.o_dict = {}
     split = lhs_string.split()
+
+    self.dont_match = None
+    if "!!" in split:
+      sep_idx = split.index("!!")
+      self.dont_match = ComponentRuleLHS(' '.join(split[(sep_idx+1):]))
+      split = split[:sep_idx]
+
+    self.o_dict = {}
     while split:
       t = split.pop(0)
       if t[0] == 'o':
@@ -188,10 +196,13 @@ class ComponentRuleLHS:
     if o_header!='': out_parts.append(o_header)
     if self.strictness!='': out_parts.append(self.strictness)
     out_parts.append(str(self.component))
+    if self.dont_match:
+      out_parts.append('!!')
+      out_parts += self.dont_match.__str__().split()
     return ' '.join(out_parts)
 
   def __eq__(self,other):
-    return self.component==other.component and self.strictness==other.strictness and self.o_dict==other.o_dict
+    return self.component==other.component and self.strictness==other.strictness and self.o_dict==other.o_dict and self.dont_match==other.dont_match
 
 
 
@@ -201,8 +212,13 @@ def match_component_pattern(pattern, target, type_checker):
   """Given a ComponentRuleLHS |pattern| and given a Component |target|,
   return a match dictionary mapping the m and i variables in |pattern|
   to various constants in |target|, and mapping the o variables in |pattern|
-  to lists of constants from |target|.
+  to lists of constants from |target|. Return None if no match.
   """
+
+  if pattern.dont_match is not None:
+    if match_component_pattern(pattern.dont_match, target, type_checker) is not None:
+      return None
+
   parsed_pattern_tokens = []
   for i,token_str in enumerate(pattern.component.tokens):
     parsed_pattern_tokens.append(
