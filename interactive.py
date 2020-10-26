@@ -1,4 +1,4 @@
-import cmd, parse_reductions, parse_ingredients
+import sys, cmd, parse_reductions, parse_ingredients
 from util import *
 from mixture import *
 from component import *
@@ -172,6 +172,9 @@ class IngredientsCmd(cmd.Cmd):
   def preloop(self):
     self.foods = []
     self.prompt_index = 0
+    if '-d' in sys.argv:
+      rs.toggle_debug()
+      self.do_record('a')
 
   def do_cut(self, arg):
     'Slice the food of the indicated index in the list : cut 3'
