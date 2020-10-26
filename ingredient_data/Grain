@@ -12,7 +12,7 @@ inherit: Grain
 
 ---
 
-name: Oatmeal
+name: Porridge
 abstract: False
 inherit: ThickGoop, AbsorbsWater
 
@@ -36,7 +36,7 @@ name: CookedRice
 abstract: False
 inherit: CookedSolid, SmallPieces
 
-cook_boil: gain_mod mashed
+cook_boil: gain_mod boiled
 cook_fry: gain_mod fried
 
 ---

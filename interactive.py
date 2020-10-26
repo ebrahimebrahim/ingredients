@@ -127,14 +127,15 @@ class Food:
             self.remove_component(component)
             self.marked_for_separating_out.append(component)
         elif args[0]=='become':
-          if len(args)!=2:
+          if len(args)<2:
             print("Invalid arguments in action:",action)
           else:
             new_ing_name = args[-1]
             if new_ing_name not in ingredients_byname:
               print("Warning: a 'become' action from {} has produced an ingredient {} that does not exist.\
                 This is probably bad.".format(ing_name,new_ing_name))
-            component.tokens[-1] = new_ing_name
+            component.tokens.pop()
+            component.tokens += args[1:]
         else:
           print("Didn't know what to do with this action: "+action)
     # reduce the mixture using reduction system made out of parsed reductions file

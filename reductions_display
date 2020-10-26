@@ -25,3 +25,5 @@ burnt_physical i1 -> burnt i1
 burnt_flavor i1 -> burn_flavored i1
 
 fried CookedRice -> FriedRice
+
+Oat Porridge -> Oatmeal
