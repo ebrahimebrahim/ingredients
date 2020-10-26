@@ -28,6 +28,9 @@ Thoughts...
 - Or we can do nothing but reduction rules! Inheritance of ingredients is replaced by declared tags just like for modifiers.
   The reduction rule language can be extended to allow for ingredient declarations and responses to boiled, fried, etc.
   Actions by user always take on modifiers like cook_boil 
+- Yusuf idea: put some reduction rules into ingredient definition files, and parse those into a
+  special reduction rules file that can be used in addition the usual reduction rules file.
+
 
 Here's an example of something I don't like:
 The abstract ing FlavorRich is defined just to group things,
