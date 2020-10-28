@@ -12,3 +12,7 @@ data_*/
 
 # Python ignores
 __pycache__/
+.ipynb_checkpoints
+
+# vscode ignores
+.vscode
