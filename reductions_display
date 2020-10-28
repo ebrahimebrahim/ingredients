@@ -4,6 +4,7 @@
 
 fried i1:Legume -> refried i1
 boiled i1:Legume -> cooked i1
+boiled Potato -> cooked Potato
 
 i1:Oil i2 -> oily i2
 
