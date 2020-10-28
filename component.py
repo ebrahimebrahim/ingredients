@@ -73,7 +73,7 @@ class TypeChecker:
         return "uqvar", "mod"
       elif ':' in token_str:
         try:
-          a,b=token_str.split(':')
+          a,_=token_str.split(':')
           assert(a[1:].isnumeric())
           assert(not last)
         except:
@@ -84,7 +84,7 @@ class TypeChecker:
         return "uqvar", ("ing" if last else "ingmod")
       elif ':' in token_str:
         try:
-          a,b=token_str.split(':')
+          a,_=token_str.split(':')
           assert(a[1:].isnumeric())
         except:
           raise Exception("Invalid token '{}'".format(token_str))
@@ -94,7 +94,7 @@ class TypeChecker:
         return "uqvar",'o'
       elif ':' in token_str:
         try:
-          a,b=token_str.split(':')
+          a,_=token_str.split(':')
           assert(a[1:].isnumeric())
         except:
           raise Exception("Invalid token '{}'".format(token_str))
