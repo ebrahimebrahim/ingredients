@@ -76,70 +76,80 @@ class Food:
 
   def apply_action_from_attribute(self,attribute):
     for component in self.mixture.components[:]:
-      # extract base ingredient from component, asserting that it's a const
-      ing_name = component.tokens[-1]
-      ing_varness, ing_category = type_checker.type_info(ing_name, last=True)
-      if ing_varness != 'const':
-        raise Exception("It does not make sense to apply actions to component expressions with variables: "+str(component))
-      # lookup in parsed ingredients and find that ingredient's "attribute" attribute (e.g. "slice")
-      if ing_name not in ingredients_byname:
-        raise Exception("Ingredient does not exist: "+ing_name)
-      ing = ingredients_byname[ing_name]
-      if attribute not in ing.__dict__:
-        raise Exception("Ingredient {} is missing attribute {}.".format(ing_name,attribute))
-      actions_string = ing.__dict__[attribute]
-      # split that attribute value on ';' to get a list "actions"
-      actions = [a.strip() for a in actions_string.split(';')]
-      for action in actions:
-        # condition on different actions like "gain_mod" and "yield", and transform component and mixture accordingly
-        args = action.split()
-        if not args or args[0]=='nothing':
-          print("Nothing happens when you {} {}".format(attribute,ing_name))
-        elif args[0]=='gain_mod':
-          if len(args)!=2:
-            print("Invalid arguments in action:",action)
-          else:
-            component.tokens.insert(0,args[1])
-        elif args[0]=='lose_mod':
-          if len(args)!=2:
-            print("Invalid arguments in action:",action)
-          else:
-            component.tokens = list(filter(lambda t:t!=args[1] , component.tokens))
-        elif args[0]=='delete':
-          if len(args)!=1:
-            print("Invalid arguments in action:",action)
-          else:
-            self.remove_component(component)
-        elif args[0]=='yield':
-          if len(args)<2:
-            print("Invalid arguments in action:",action)
-          else:
-            new_component_tokens = [t if t!='SELF' else ing_name for t in args[1:]]
-            new_ing_name = new_component_tokens[-1]
-            if new_ing_name not in ingredients_byname:
-              print("Warning: a 'yield' action from {} has produced an ingredient {} that does not exist.\
-                This is probably bad.".format(ing_name,new_ing_name))
-            self.mixture.components.append(Component(new_component_tokens))
-        elif args[0]=='separate_out':
-          if len(args)!=1:
-            print("Invalid arguments in action:",action)
-          else:
-            self.remove_component(component)
-            self.marked_for_separating_out.append(component)
-        elif args[0]=='become':
-          if len(args)<2:
-            print("Invalid arguments in action:",action)
-          else:
-            new_ing_name = args[-1]
-            if new_ing_name not in ingredients_byname:
-              print("Warning: a 'become' action from {} has produced an ingredient {} that does not exist.\
-                This is probably bad.".format(ing_name,new_ing_name))
-            component.tokens.pop()
-            component.tokens += args[1:]
-        else:
-          print("Didn't know what to do with this action: "+action)
-    # reduce the mixture using reduction system made out of parsed reductions file
+      self.apply_action_to_component(component, attribute)
     self.reduce()
+  
+  def bake_but_fry_fatties(self):
+    for component in self.mixture.components[:]:
+      if any(token_str_has_tag(token_str,"Fat") for token_str in component.tokens):
+        self.apply_action_to_component(component, "cook_fry")
+      else:
+        self.apply_action_to_component(component, "cook_bake")
+    self.reduce()
+
+  def apply_action_to_component(self, component, attribute):
+    # extract base ingredient from component, asserting that it's a const
+    ing_name = component.tokens[-1]
+    ing_varness, _ = type_checker.type_info(ing_name, last=True)
+    if ing_varness != 'const':
+      raise Exception("It does not make sense to apply actions to component expressions with variables: "+str(component))
+    # lookup in parsed ingredients and find that ingredient's "attribute" attribute (e.g. "slice")
+    if ing_name not in ingredients_byname:
+      raise Exception("Ingredient does not exist: "+ing_name)
+    ing = ingredients_byname[ing_name]
+    if attribute not in ing.__dict__:
+      raise Exception("Ingredient {} is missing attribute {}.".format(ing_name,attribute))
+    actions_string = ing.__dict__[attribute]
+    # split that attribute value on ';' to get a list "actions"
+    actions = [a.strip() for a in actions_string.split(';')]
+    for action in actions:
+      # condition on different actions like "gain_mod" and "yield", and transform component and mixture accordingly
+      args = action.split()
+      if not args or args[0]=='nothing':
+        print("Nothing happens when you {} {}".format(attribute,ing_name))
+      elif args[0]=='gain_mod':
+        if len(args)!=2:
+          print("Invalid arguments in action:",action)
+        else:
+          component.tokens.insert(0,args[1])
+      elif args[0]=='lose_mod':
+        if len(args)!=2:
+          print("Invalid arguments in action:",action)
+        else:
+          component.tokens = list(filter(lambda t:t!=args[1] , component.tokens))
+      elif args[0]=='delete':
+        if len(args)!=1:
+          print("Invalid arguments in action:",action)
+        else:
+          self.remove_component(component)
+      elif args[0]=='yield':
+        if len(args)<2:
+          print("Invalid arguments in action:",action)
+        else:
+          new_component_tokens = [t if t!='SELF' else ing_name for t in args[1:]]
+          new_ing_name = new_component_tokens[-1]
+          if new_ing_name not in ingredients_byname:
+            print("Warning: a 'yield' action from {} has produced an ingredient {} that does not exist.\
+              This is probably bad.".format(ing_name,new_ing_name))
+          self.mixture.components.append(Component(new_component_tokens))
+      elif args[0]=='separate_out':
+        if len(args)!=1:
+          print("Invalid arguments in action:",action)
+        else:
+          self.remove_component(component)
+          self.marked_for_separating_out.append(component)
+      elif args[0]=='become':
+        if len(args)<2:
+          print("Invalid arguments in action:",action)
+        else:
+          new_ing_name = args[-1]
+          if new_ing_name not in ingredients_byname:
+            print("Warning: a 'become' action from {} has produced an ingredient {} that does not exist.\
+              This is probably bad.".format(ing_name,new_ing_name))
+          component.tokens.pop()
+          component.tokens += args[1:]
+      else:
+        print("Didn't know what to do with this action: "+action)
 
   def cook(self):
     # Note that cook is a "keyword" and should never show up as an attribute name
@@ -154,7 +164,7 @@ class Food:
     elif any(token_str_has_tag(component.tokens[-1],"Fat") for component in self.mixture.components):
       self.apply_action_from_attribute("cook_fry")
     else:
-      self.apply_action_from_attribute("cook_bake")
+      self.bake_but_fry_fatties()
 
   def __str__(self, reduce_for_display=True):
     pot_str = "Pot containing " if self.in_container else ""
