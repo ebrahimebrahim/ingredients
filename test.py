@@ -25,7 +25,7 @@ class TestComponentRuleLHS(unittest.TestCase):
       self.assertEqual(lhs_string,str(p))
 
 
-class TestTypeChecker(unittest.TestCase):
+class TestTypechecker(unittest.TestCase):
 
   def test_typeinfo(self):
     type_checker = TrivialTypeChecker()
@@ -37,6 +37,8 @@ class TestTypeChecker(unittest.TestCase):
       "m24" : ('uqvar','mod'),
       "AnIngredient" : ('const','ingmod'),
       "salty" : ('const','mod'),
+      "ipple" : ('const','mod'),
+      "mipple" : ('const','mod'),
     }
     for token in examples_not_last:
       self.assertEqual(examples_not_last[token] , type_checker.type_info(token))
